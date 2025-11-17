@@ -1,0 +1,368 @@
+/* ===== HEADER STYLES ===== */
+
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Base Header Styles */
+.site-header {
+    font-family: 'Raleway', sans-serif;
+    background: #ffffff;
+    box-shadow: 0 2px 15px rgba(0, 25, 70, 0.08);
+    position: relative;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+/* Default Header Layout */
+.header-default .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 0;
+    min-height: 80px;
+}
+
+.header-default .header-logo {
+    flex: 0 0 auto;
+}
+
+.header-default .header-navigation {
+    flex: 1;
+    text-align: center;
+}
+
+.header-default .header-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Centered Header Layout */
+.header-centered {
+    text-align: center;
+    padding: 1.5rem 0 1rem;
+}
+
+.header-centered .header-logo-centered {
+    margin-bottom: 1.5rem;
+}
+
+.header-centered .header-navigation-centered {
+    margin-bottom: 1.5rem;
+}
+
+.header-centered .header-actions-centered {
+    margin-top: 1rem;
+}
+
+/* Transparent Header */
+.header-transparent {
+    background: transparent !important;
+    box-shadow: none !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.header-transparent .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    min-height: 80px;
+}
+
+/* Minimal Header */
+.header-minimal .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    min-height: 70px;
+}
+
+/* Logo Styles */
+.site-logo img {
+    height: 45px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.site-logo:hover img {
+    transform: scale(1.05);
+}
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #001946;
+    text-decoration: none;
+}
+
+/* Navigation Menu */
+.primary-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+    align-items: center;
+}
+
+.primary-menu a {
+    color: #001946;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.primary-menu a:hover {
+    color: #E5C902;
+}
+
+.primary-menu a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background: #E5C902;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.primary-menu a:hover::after {
+    width: 100%;
+}
+
+/* Centered Menu */
+.centered-menu {
+    justify-content: center;
+    gap: 2.5rem;
+}
+
+/* Minimal Menu */
+.minimal-menu {
+    gap: 2rem;
+}
+
+/* Header Actions */
+.header-search {
+    display: flex;
+    align-items: center;
+}
+
+.search-toggle {
+    background: none;
+    border: none;
+    color: #001946;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-toggle:hover {
+    color: #E5C902;
+    background: rgba(0, 25, 70, 0.05);
+}
+
+/* CTA Button */
+.cta-button {
+    background: #E5C902;
+    color: #001946;
+    padding: 0.7rem 1.5rem;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    background: #d4b902;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 201, 2, 0.3);
+}
+
+/* Sticky Header */
+.header-sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    animation: slideDown 0.3s ease;
+    box-shadow: 0 2px 20px rgba(0, 25, 70, 0.15);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Active Menu Item */
+.primary-menu .current-menu-item a {
+    color: #E5C902 !important;
+}
+
+.primary-menu .current-menu-item a::after {
+    width: 100%;
+}
+
+/* Transparent Header Specific Styles */
+.header-transparent .primary-menu a {
+    color: currentColor;
+}
+
+.header-transparent .search-toggle {
+    color: currentColor;
+}
+
+.header-transparent .cta-button {
+    background: #E5C902;
+    color: #001946;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    /* Default Header Mobile */
+    .header-default .header-inner {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 0;
+        text-align: center;
+    }
+    
+    .header-default .header-navigation {
+        order: 3;
+        width: 100%;
+    }
+    
+    .header-default .header-actions {
+        order: 2;
+        margin-top: 0.5rem;
+    }
+    
+    /* Centered Header Mobile */
+    .header-centered {
+        padding: 1rem 0;
+    }
+    
+    .header-centered .header-logo-centered {
+        margin-bottom: 1rem;
+    }
+    
+    .header-centered .header-navigation-centered {
+        margin-bottom: 1rem;
+    }
+    
+    /* Transparent Header Mobile */
+    .header-transparent .header-inner {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 0;
+        text-align: center;
+    }
+    
+    /* Minimal Header Mobile */
+    .header-minimal .header-inner {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 0;
+        text-align: center;
+    }
+    
+    /* Menu Mobile */
+    .primary-menu {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .centered-menu {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    /* Logo Mobile */
+    .site-logo img {
+        height: 40px;
+    }
+    
+    .logo-text {
+        font-size: 1.6rem;
+    }
+    
+    /* CTA Button Mobile */
+    .cta-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .primary-menu {
+        gap: 0.8rem;
+    }
+    
+    .primary-menu a {
+        font-size: 1rem;
+    }
+    
+    .site-logo img {
+        height: 35px;
+    }
+    
+    .logo-text {
+        font-size: 1.4rem;
+    }
+    
+    .cta-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+}
