@@ -53,9 +53,11 @@ $inline_style = ross_theme_get_header_inline_style();
         </nav>
 
         <!-- CTA Button Centered -->
-        <?php if (ross_theme_header_feature_enabled('cta_button')): ?>
+        <?php if (ross_theme_header_feature_enabled('cta_button')):
+            $cta_url = ! empty($options['cta_button_url']) ? $options['cta_button_url'] : home_url('/contact');
+        ?>
         <div class="header-actions-centered">
-            <a href="/contact" class="cta-button" style="background: <?php echo esc_attr($options['cta_button_color']); ?>;">
+            <a href="<?php echo esc_url($cta_url); ?>" class="cta-button" style="background: <?php echo esc_attr($options['cta_button_color']); ?>;">
                 <?php echo esc_html($options['cta_button_text']); ?>
             </a>
         </div>

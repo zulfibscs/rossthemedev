@@ -60,7 +60,7 @@
     // Announcement Text
     wp.customize('ross_topbar_announcement', function(value) {
         value.bind(function(to) {
-            $('.topbar-announcement').html(to);
+            $('.site-announcement-strip .announcement-text').html(to);
         });
     });
 
@@ -68,9 +68,9 @@
     wp.customize('ross_topbar_marquee_enable', function(value) {
         value.bind(function(to) {
             if (to) {
-                $('.topbar-announcement').addClass('announce-marquee');
+                $('.site-announcement-strip .announcement-text').addClass('announce-marquee');
             } else {
-                $('.topbar-announcement').removeClass('announce-marquee');
+                $('.site-announcement-strip .announcement-text').removeClass('announce-marquee');
             }
         });
     });

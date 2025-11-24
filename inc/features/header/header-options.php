@@ -49,6 +49,7 @@ class RossHeaderOptions {
         $this->add_layout_section();
         $this->add_logo_section();
         $this->add_topbar_section();
+        $this->add_announcement_section();
         $this->add_navigation_section();
         $this->add_cta_section();
         $this->add_appearance_section();
@@ -288,6 +289,31 @@ class RossHeaderOptions {
             'ross_header_topbar_section'
         );
 
+        // Announcement styling fields (moved to Announcement section but keep callbacks available)
+        add_settings_field(
+            'announcement_bg_color',
+            'Announcement Background',
+            array($this, 'announcement_bg_color_callback'),
+            'ross-theme-header-topbar',
+            'ross_header_topbar_section'
+        );
+
+        add_settings_field(
+            'announcement_text_color',
+            'Announcement Text Color',
+            array($this, 'announcement_text_color_callback'),
+            'ross-theme-header-topbar',
+            'ross_header_topbar_section'
+        );
+
+        add_settings_field(
+            'announcement_font_size',
+            'Announcement Font Size',
+            array($this, 'announcement_font_size_callback'),
+            'ross-theme-header-topbar',
+            'ross_header_topbar_section'
+        );
+
         add_settings_field(
             'social_links',
             'Social Links (custom)',
@@ -388,12 +414,180 @@ class RossHeaderOptions {
         );
         
         add_settings_field(
+            'menu_hover_color',
+            'Menu Hover Color',
+            array($this, 'menu_hover_color_callback'),
+            'ross-theme-header-nav',
+            'ross_header_nav_section'
+        );
+
+        add_settings_field(
+            'menu_bg_color',
+            'Menu Background Color',
+            array($this, 'menu_bg_color_callback'),
+            'ross-theme-header-nav',
+            'ross_header_nav_section'
+        );
+
+        add_settings_field(
+            'menu_border_color',
+            'Menu Border Color',
+            array($this, 'menu_border_color_callback'),
+            'ross-theme-header-nav',
+            'ross_header_nav_section'
+        );
+        
+        add_settings_field(
             'mobile_breakpoint',
             'Mobile Breakpoint (px)',
             array($this, 'mobile_breakpoint_callback'),
             'ross-theme-header-nav',
             'ross_header_nav_section'
         );
+    }
+
+    /**
+     * Announcement Section (moved out of Top Bar)
+     */
+    private function add_announcement_section() {
+        add_settings_section(
+            'ross_header_announcement_section',
+            '📣 Announcement',
+            array($this, 'announcement_section_callback'),
+            'ross-theme-header-announcement'
+        );
+
+        add_settings_field(
+            'enable_announcement',
+            'Enable Announcement',
+            array($this, 'enable_announcement_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_text',
+            'Announcement Text',
+            array($this, 'announcement_text_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_animation',
+            'Announcement Animation',
+            array($this, 'announcement_animation_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_bg_color',
+            'Announcement Background',
+            array($this, 'announcement_bg_color_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_text_color',
+            'Announcement Text Color',
+            array($this, 'announcement_text_color_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_font_size',
+            'Announcement Font Size',
+            array($this, 'announcement_font_size_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+        
+        add_settings_field(
+            'announcement_sticky',
+            'Sticky Announcement',
+            array($this, 'announcement_sticky_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_sticky_offset',
+            'Sticky Offset (px)',
+            array($this, 'announcement_sticky_offset_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        add_settings_field(
+            'announcement_position',
+            'Announcement Position',
+            array($this, 'announcement_position_callback'),
+            'ross-theme-header-announcement',
+            'ross_header_announcement_section'
+        );
+
+        // Announcement styling fields (colors, font size) are still registered as topbar style fields
+    }
+
+    public function announcement_section_callback() {
+        // Intentionally left blank per front-end design request (removed description)
+    }
+
+    public function announcement_bg_color_callback() {
+        $value = isset($this->options['announcement_bg_color']) ? $this->options['announcement_bg_color'] : '#E5C902';
+        ?>
+        <input type="text" name="ross_theme_header_options[announcement_bg_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#E5C902" />
+        <?php
+    }
+
+    public function announcement_text_color_callback() {
+        $value = isset($this->options['announcement_text_color']) ? $this->options['announcement_text_color'] : '#001946';
+        ?>
+        <input type="text" name="ross_theme_header_options[announcement_text_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#001946" />
+        <?php
+    }
+
+    public function announcement_font_size_callback() {
+        $value = isset($this->options['announcement_font_size']) ? $this->options['announcement_font_size'] : '14px';
+        ?>
+        <select name="ross_theme_header_options[announcement_font_size]">
+            <option value="12px" <?php selected($value, '12px'); ?>>Small (12px)</option>
+            <option value="14px" <?php selected($value, '14px'); ?>>Medium (14px)</option>
+            <option value="16px" <?php selected($value, '16px'); ?>>Large (16px)</option>
+            <option value="18px" <?php selected($value, '18px'); ?>>Extra Large (18px)</option>
+        </select>
+        <?php
+    }
+
+    public function announcement_sticky_callback() {
+        $value = isset($this->options['announcement_sticky']) ? $this->options['announcement_sticky'] : 0;
+        ?>
+        <input type="checkbox" name="ross_theme_header_options[announcement_sticky]" value="1" <?php checked(1, $value); ?> />
+        <label for="announcement_sticky">Enable sticky announcement (keeps strip visible while scrolling)</label>
+        <?php
+    }
+
+    public function announcement_sticky_offset_callback() {
+        $value = isset($this->options['announcement_sticky_offset']) ? $this->options['announcement_sticky_offset'] : 0;
+        ?>
+        <input type="number" name="ross_theme_header_options[announcement_sticky_offset]" value="<?php echo esc_attr($value); ?>" class="small-text" /> px
+        <p class="description">Optional offset from the top when sticky (e.g., to avoid overlapping a sticky admin/topbar). Default 0.</p>
+        <?php
+    }
+
+    public function announcement_position_callback() {
+        $value = isset($this->options['announcement_position']) ? $this->options['announcement_position'] : 'top_of_topbar';
+        ?>
+        <select name="ross_theme_header_options[announcement_position]">
+            <option value="top_of_topbar" <?php selected($value, 'top_of_topbar'); ?>>Top of Topbar (topmost)</option>
+            <option value="below_topbar" <?php selected($value, 'below_topbar'); ?>>Below Topbar (top of header)</option>
+            <option value="below_header" <?php selected($value, 'below_header'); ?>>Below Header (after header)</option>
+        </select>
+        <p class="description">Choose the announcement placement: top of page, between topbar and header, or below the header.</p>
+        <?php
     }
     
     private function add_cta_section() {
@@ -432,6 +626,14 @@ class RossHeaderOptions {
             'cta_button_color',
             'Button Background Color',
             array($this, 'cta_button_color_callback'),
+            'ross-theme-header-cta',
+            'ross_header_cta_section'
+        );
+
+        add_settings_field(
+            'cta_button_url',
+            'Button Link (URL)',
+            array($this, 'cta_button_url_callback'),
             'ross-theme-header-cta',
             'ross_header_cta_section'
         );
@@ -1051,6 +1253,30 @@ class RossHeaderOptions {
         <input type="text" name="ross_theme_header_options[active_item_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#E5C902" />
         <?php
     }
+
+    public function menu_hover_color_callback() {
+        $value = isset($this->options['menu_hover_color']) ? $this->options['menu_hover_color'] : '#E5C902';
+        ?>
+        <input type="text" name="ross_theme_header_options[menu_hover_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#E5C902" />
+        <p class="description">Color applied when hovering menu links (desktop).</p>
+        <?php
+    }
+
+    public function menu_bg_color_callback() {
+        $value = isset($this->options['menu_bg_color']) ? $this->options['menu_bg_color'] : '';
+        ?>
+        <input type="text" name="ross_theme_header_options[menu_bg_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="" />
+        <p class="description">Optional background color for the menu area. Leave empty for transparent.</p>
+        <?php
+    }
+
+    public function menu_border_color_callback() {
+        $value = isset($this->options['menu_border_color']) ? $this->options['menu_border_color'] : '#E5C902';
+        ?>
+        <input type="text" name="ross_theme_header_options[menu_border_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#E5C902" />
+        <p class="description">Color for the underline/border used by menu items (and active indicator).</p>
+        <?php
+    }
     
     public function mobile_breakpoint_callback() {
         $value = isset($this->options['mobile_breakpoint']) ? $this->options['mobile_breakpoint'] : '768';
@@ -1088,6 +1314,14 @@ class RossHeaderOptions {
         $value = isset($this->options['cta_button_color']) ? $this->options['cta_button_color'] : '#E5C902';
         ?>
         <input type="text" name="ross_theme_header_options[cta_button_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#E5C902" />
+        <?php
+    }
+
+    public function cta_button_url_callback() {
+        $value = isset($this->options['cta_button_url']) ? $this->options['cta_button_url'] : '/contact';
+        ?>
+        <input type="url" name="ross_theme_header_options[cta_button_url]" value="<?php echo esc_attr($value); ?>" class="regular-text" placeholder="https://example.com/contact" />
+        <p class="description">Full URL for the CTA button (e.g., https://example.com/contact). Leave empty to use site contact page.</p>
         <?php
     }
     
@@ -1159,11 +1393,19 @@ class RossHeaderOptions {
     $sanitized['social_twitter'] = isset($input['social_twitter']) ? esc_url_raw($input['social_twitter']) : '';
     $sanitized['social_linkedin'] = isset($input['social_linkedin']) ? esc_url_raw($input['social_linkedin']) : '';
     $sanitized['phone_number'] = isset($input['phone_number']) ? sanitize_text_field($input['phone_number']) : '';
+        $sanitized['topbar_email'] = isset($input['topbar_email']) ? sanitize_email($input['topbar_email']) : '';
         $sanitized['enable_announcement'] = isset($input['enable_announcement']) ? 1 : 0;
     // Allow HTML in announcements (basic tags) - sanitize with wp_kses_post
     $sanitized['announcement_text'] = isset($input['announcement_text']) ? wp_kses_post($input['announcement_text']) : '';
     $sanitized['enable_topbar_left'] = isset($input['enable_topbar_left']) ? 1 : 0;
     $sanitized['announcement_animation'] = isset($input['announcement_animation']) ? sanitize_text_field($input['announcement_animation']) : 'marquee';
+    $sanitized['announcement_bg_color'] = isset($input['announcement_bg_color']) ? sanitize_hex_color($input['announcement_bg_color']) : '#E5C902';
+    $sanitized['announcement_text_color'] = isset($input['announcement_text_color']) ? sanitize_hex_color($input['announcement_text_color']) : '#001946';
+    $sanitized['announcement_font_size'] = isset($input['announcement_font_size']) ? sanitize_text_field($input['announcement_font_size']) : '14px';
+    $sanitized['announcement_sticky'] = isset($input['announcement_sticky']) ? 1 : 0;
+    $sanitized['announcement_sticky_offset'] = isset($input['announcement_sticky_offset']) ? absint($input['announcement_sticky_offset']) : 0;
+    $allowed_positions = array('top_of_topbar','below_topbar','below_header');
+    $sanitized['announcement_position'] = isset($input['announcement_position']) && in_array($input['announcement_position'], $allowed_positions) ? sanitize_text_field($input['announcement_position']) : 'top_of_topbar';
     // Social links - array of {icon,url}
     $sanitized['social_links'] = array();
     if (isset($input['social_links']) && is_array($input['social_links'])) {
@@ -1184,6 +1426,11 @@ class RossHeaderOptions {
         $sanitized['topbar_gradient_color2'] = isset($input['topbar_gradient_color2']) ? sanitize_hex_color($input['topbar_gradient_color2']) : '#003d7a';
         $sanitized['topbar_border_color'] = isset($input['topbar_border_color']) ? sanitize_hex_color($input['topbar_border_color']) : '#E5C902';
         $sanitized['topbar_border_width'] = isset($input['topbar_border_width']) ? absint($input['topbar_border_width']) : 0;
+        $sanitized['topbar_icon_hover_color'] = isset($input['topbar_icon_hover_color']) ? sanitize_hex_color($input['topbar_icon_hover_color']) : $sanitized['topbar_icon_color'];
+        $sanitized['sticky_topbar'] = isset($input['sticky_topbar']) ? 1 : 0;
+        $sanitized['topbar_sticky_offset'] = isset($input['topbar_sticky_offset']) ? absint($input['topbar_sticky_offset']) : 0;
+        $sanitized['topbar_font_size'] = isset($input['topbar_font_size']) ? absint($input['topbar_font_size']) : 14;
+        $sanitized['topbar_alignment'] = isset($input['topbar_alignment']) ? sanitize_text_field($input['topbar_alignment']) : 'left';
         
         // Custom Icon Links
         $sanitized['topbar_custom_icon_links'] = array();
@@ -1202,6 +1449,9 @@ class RossHeaderOptions {
         $sanitized['menu_alignment'] = sanitize_text_field($input['menu_alignment']);
         $sanitized['menu_font_size'] = absint($input['menu_font_size']);
         $sanitized['active_item_color'] = sanitize_hex_color($input['active_item_color']);
+        $sanitized['menu_hover_color'] = isset($input['menu_hover_color']) ? sanitize_hex_color($input['menu_hover_color']) : $sanitized['active_item_color'];
+        $sanitized['menu_bg_color'] = isset($input['menu_bg_color']) && !empty($input['menu_bg_color']) ? sanitize_hex_color($input['menu_bg_color']) : '';
+        $sanitized['menu_border_color'] = isset($input['menu_border_color']) ? sanitize_hex_color($input['menu_border_color']) : $sanitized['active_item_color'];
         $sanitized['mobile_breakpoint'] = absint($input['mobile_breakpoint']);
         
         // CTA
@@ -1209,6 +1459,7 @@ class RossHeaderOptions {
         $sanitized['enable_cta_button'] = isset($input['enable_cta_button']) ? 1 : 0;
         $sanitized['cta_button_text'] = sanitize_text_field($input['cta_button_text']);
         $sanitized['cta_button_color'] = sanitize_hex_color($input['cta_button_color']);
+        $sanitized['cta_button_url'] = isset($input['cta_button_url']) && ! empty($input['cta_button_url']) ? esc_url_raw($input['cta_button_url']) : home_url('/contact');
         
         // Appearance
         $sanitized['header_bg_color'] = sanitize_hex_color($input['header_bg_color']);

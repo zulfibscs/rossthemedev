@@ -1,40 +1,56 @@
 <?php
 /**
  * Top Bar Template
- * Displays the top bar with customizer settings
+ * Displays the top bar with improved admin settings
  */
 
 if (!defined('ABSPATH')) exit;
 
-$enable = get_theme_mod('ross_topbar_enable', false);
+// Get header options from the improved admin interface
+$header_options = get_option('ross_theme_header_options', array());
+
+$enable = isset($header_options['enable_topbar']) ? $header_options['enable_topbar'] : false;
 if (!$enable) {
     return;
 }
 
-$left_content = get_theme_mod('ross_topbar_left_content', '');
-$show_left = get_theme_mod('ross_topbar_show_left', true);
-$phone = get_theme_mod('ross_topbar_phone', '');
-$email = get_theme_mod('ross_topbar_email', '');
-$announcement = get_theme_mod('ross_topbar_announcement', '');
-$marquee = get_theme_mod('ross_topbar_marquee_enable', false);
-$social_enable = get_theme_mod('ross_topbar_social_enable', false);
-$bg_color = get_theme_mod('ross_topbar_bg_color', '#001946');
-$text_color = get_theme_mod('ross_topbar_text_color', '#ffffff');
-$alignment = get_theme_mod('ross_topbar_alignment', 'left');
-$gradient_enable = get_theme_mod('ross_topbar_gradient_enable', false);
-$gradient_color1 = get_theme_mod('ross_topbar_gradient_color1', '#001946');
-$gradient_color2 = get_theme_mod('ross_topbar_gradient_color2', '#003d7a');
-$shadow_enable = get_theme_mod('ross_topbar_shadow_enable', false);
-$border_width = get_theme_mod('ross_topbar_border_width', 0);
-$border_color = get_theme_mod('ross_topbar_border_color', '#E5C902');
+$show_left = isset($header_options['enable_topbar_left']) ? $header_options['enable_topbar_left'] : true;
+$left_content = isset($header_options['topbar_left_content']) ? $header_options['topbar_left_content'] : '';
+$phone = isset($header_options['phone_number']) ? $header_options['phone_number'] : '';
+$announcement_enabled = false; // announcements handled centrally
+$social_enable = isset($header_options['enable_social']) ? $header_options['enable_social'] : false;
+
+// Color and style options
+$bg_color = isset($header_options['topbar_bg_color']) ? $header_options['topbar_bg_color'] : '#001946';
+$text_color = isset($header_options['topbar_text_color']) ? $header_options['topbar_text_color'] : '#ffffff';
+$icon_color = isset($header_options['topbar_icon_color']) ? $header_options['topbar_icon_color'] : $text_color;
+$gradient_enable = isset($header_options['topbar_gradient_enable']) ? $header_options['topbar_gradient_enable'] : false;
+$gradient_color1 = isset($header_options['topbar_gradient_color1']) ? $header_options['topbar_gradient_color1'] : '#001946';
+$gradient_color2 = isset($header_options['topbar_gradient_color2']) ? $header_options['topbar_gradient_color2'] : '#003d7a';
+$shadow_enable = isset($header_options['topbar_shadow_enable']) ? $header_options['topbar_shadow_enable'] : false;
+$border_width = isset($header_options['topbar_border_width']) ? $header_options['topbar_border_width'] : 0;
+$border_color = isset($header_options['topbar_border_color']) ? $header_options['topbar_border_color'] : '#E5C902';
+
+// Social media URLs
+$social_urls = array(
+    'facebook' => isset($header_options['social_facebook']) ? $header_options['social_facebook'] : '',
+    'twitter' => isset($header_options['social_twitter']) ? $header_options['social_twitter'] : '',
+    'linkedin' => isset($header_options['social_linkedin']) ? $header_options['social_linkedin'] : '',
+    'instagram' => isset($header_options['social_instagram']) ? $header_options['social_instagram'] : '',
+    'youtube' => isset($header_options['social_youtube']) ? $header_options['social_youtube'] : '',
+);
+
+// Custom social icons
+$custom_icons = isset($header_options['social_custom_icons']) ? $header_options['social_custom_icons'] : array();
 
 // Build inline style
-$style = 'text-align: ' . esc_attr($alignment) . '; color: ' . esc_attr($text_color) . ';';
+$style = '';
 if ($gradient_enable) {
-    $style .= ' background: linear-gradient(90deg, ' . esc_attr($gradient_color1) . ', ' . esc_attr($gradient_color2) . ');';
+    $style .= 'background: linear-gradient(90deg, ' . esc_attr($gradient_color1) . ', ' . esc_attr($gradient_color2) . ');';
 } else {
-    $style .= ' background-color: ' . esc_attr($bg_color) . ';';
+    $style .= 'background-color: ' . esc_attr($bg_color) . ';';
 }
+$style .= ' color: ' . esc_attr($text_color) . ';';
 if ($shadow_enable) {
     $style .= ' box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);';
 }
@@ -44,48 +60,59 @@ if ($border_width > 0) {
 ?>
 
 <div class="site-topbar" style="<?php echo $style; ?>">
+    <!-- Announcement is rendered centrally via ross_theme_render_announcement_strip() -->
     <div class="container topbar-inner">
         <!-- Left Section -->
         <div class="topbar-left" <?php echo !$show_left ? 'style="display: none;"' : ''; ?>>
-            <?php echo wp_kses_post($left_content); ?>
-        </div>
-
-        <!-- Center Announcement -->
-        <div class="topbar-center">
-            <?php if ($announcement): ?>
-                <div class="topbar-announcement <?php echo $marquee ? 'announce-marquee' : ''; ?>">
-                    <?php echo wp_kses_post($announcement); ?>
-                </div>
-            <?php endif; ?>
-        </div>
-
-        <!-- Right Section: Phone, Email, Social -->
-        <div class="topbar-right">
             <?php if ($phone): ?>
-                <a class="topbar-phone" href="tel:<?php echo esc_attr($phone); ?>">
-                    <?php echo esc_html($phone); ?>
+                <a class="topbar-phone" href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $phone)); ?>" style="color: inherit; text-decoration: none;">
+                    📞 <?php echo esc_html($phone); ?>
                 </a>
             <?php endif; ?>
-
-            <?php if ($email): ?>
-                <a class="topbar-email" href="mailto:<?php echo esc_attr($email); ?>">
-                    <?php echo esc_html($email); ?>
-                </a>
+            <?php if (!empty($left_content)): ?>
+                <span class="topbar-custom-content"><?php echo wp_kses_post($left_content); ?></span>
             <?php endif; ?>
+        </div>
 
+        <!-- Center (reserved for nav/branding). Announcement is shown above as a single-line strip. -->
+        <div class="topbar-center">
+            <!-- reserved for center content -->
+        </div>
+
+        <!-- Right Section: Social Icons -->
+        <div class="topbar-right">
             <?php if ($social_enable): ?>
                 <div class="topbar-social">
                     <?php
-                    $platforms = array('facebook', 'twitter', 'linkedin', 'instagram', 'youtube');
-                    foreach ($platforms as $platform) {
-                        $enabled = get_theme_mod("ross_topbar_social_{$platform}_enabled", false);
-                        $url = get_theme_mod("ross_topbar_social_{$platform}_url", '');
-                        $icon = get_theme_mod("ross_topbar_social_{$platform}_icon", '');
-
-                        if ($enabled && !empty($url) && !empty($icon)) {
-                            echo '<a class="social-link" data-social="' . esc_attr($platform) . '" href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr($platform) . '">';
-                            echo '<i class="' . esc_attr($icon) . '"></i>';
+                    // Default social icons with Font Awesome classes
+                    $social_icons = array(
+                        'facebook' => 'fab fa-facebook-f',
+                        'twitter' => 'fab fa-twitter',
+                        'linkedin' => 'fab fa-linkedin-in',
+                        'instagram' => 'fab fa-instagram',
+                        'youtube' => 'fab fa-youtube'
+                    );
+                    
+                    foreach ($social_urls as $platform => $url) {
+                        if (!empty($url)) {
+                            echo '<a class="social-link" data-social="' . esc_attr($platform) . '" href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr(ucfirst($platform)) . '" style="color: ' . esc_attr($icon_color) . ';">';
+                            echo '<i class="' . esc_attr($social_icons[$platform]) . '"></i>';
                             echo '</a>';
+                        }
+                    }
+                    
+                    // Custom social icons
+                    if (!empty($custom_icons) && is_array($custom_icons)) {
+                        foreach ($custom_icons as $icon) {
+                            if (isset($icon['enabled']) && $icon['enabled'] && !empty($icon['url']) && !empty($icon['icon'])) {
+                                echo '<a class="social-link social-custom" href="' . esc_url($icon['url']) . '" target="_blank" rel="noopener noreferrer" title="' . esc_attr($icon['name'] ?? 'Custom') . '" style="color: ' . esc_attr($icon_color) . ';">';
+                                if (!empty($icon['icon_url'])) {
+                                    echo '<img src="' . esc_url($icon['icon_url']) . '" alt="' . esc_attr($icon['name'] ?? '') . '" style="width: 16px; height: 16px; filter: brightness(0) invert(1);">';
+                                } else {
+                                    echo '<i class="' . esc_attr($icon['icon']) . '"></i>';
+                                }
+                                echo '</a>';
+                            }
                         }
                     }
                     ?>
@@ -100,6 +127,7 @@ if ($border_width > 0) {
         width: 100%;
         padding: 12px 0;
         transition: all 0.3s ease;
+        font-size: 14px;
     }
 
     .topbar-inner {
@@ -108,35 +136,24 @@ if ($border_width > 0) {
         gap: 20px;
         align-items: center;
         padding: 0 20px;
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
     .topbar-left {
         text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
     .topbar-center {
         text-align: center;
         flex-grow: 1;
+        min-width: 0;
     }
 
-    .topbar-announcement {
-        font-weight: 500;
-        padding: 5px 10px;
-        border-radius: 3px;
-    }
-
-    .topbar-announcement.announce-marquee {
-        animation: marquee 20s linear infinite;
-        overflow: hidden;
-        white-space: nowrap;
-        display: inline-block;
-        width: 100%;
-    }
-
-    @keyframes marquee {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
-    }
+    /* Announcement markup/styles are handled centrally in assets/css/frontend/header.css */
 
     .topbar-right {
         text-align: right;
@@ -146,21 +163,36 @@ if ($border_width > 0) {
         align-items: center;
     }
 
-    .topbar-phone,
-    .topbar-email {
+    .topbar-phone {
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: opacity 0.3s;
+        font-weight: 500;
+    }
+
+    .topbar-phone:hover {
+        opacity: 0.8;
+    }
+
+    .topbar-custom-content {
         display: inline-block;
+    }
+
+    .topbar-custom-content a {
+        color: inherit;
+        text-decoration: none;
         transition: opacity 0.3s;
     }
 
-    .topbar-phone:hover,
-    .topbar-email:hover {
+    .topbar-custom-content a:hover {
         opacity: 0.8;
     }
 
     .topbar-social {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         align-items: center;
     }
 
@@ -168,8 +200,8 @@ if ($border_width > 0) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.1);
         text-decoration: none;
@@ -182,21 +214,51 @@ if ($border_width > 0) {
         transform: scale(1.1);
     }
 
+    .social-link.social-custom img {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .topbar-inner {
             grid-template-columns: 1fr;
             gap: 10px;
+            padding: 0 15px;
         }
 
         .topbar-left,
         .topbar-center,
         .topbar-right {
             text-align: center;
+            justify-content: center;
         }
 
         .topbar-right {
             justify-content: center;
+        }
+
+        .topbar-left {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .site-topbar {
+            padding: 8px 0;
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .topbar-social {
+            gap: 8px;
+        }
+
+        .social-link {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
         }
     }
 </style>

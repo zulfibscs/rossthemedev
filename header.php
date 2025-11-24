@@ -24,12 +24,28 @@
     <?php endif; ?>
 
     <?php
-    // Render topbar (if enabled) then the header using our modular system
+    // Render announcement / topbar / header using centralized helpers
+    if (function_exists('ross_theme_render_announcement_at')) {
+        ross_theme_render_announcement_at('before_topbar');
+    }
+
     if (function_exists('ross_theme_render_topbar')) {
         ross_theme_render_topbar();
     }
+
+    if (function_exists('ross_theme_render_announcement_at')) {
+        ross_theme_render_announcement_at('between_topbar_header');
+    }
+
     if (function_exists('ross_theme_display_header')) {
         ross_theme_display_header();
+    }
+
+    // Include global header search overlay (if enabled)
+    get_template_part('template-parts/header/header', 'search');
+
+    if (function_exists('ross_theme_render_announcement_at')) {
+        ross_theme_render_announcement_at('below_header');
     }
     ?>
 

@@ -1,0 +1,35 @@
+:root{
+    --ross-accent:#E5C902;
+    --ross-bg:#0b1b38;
+    --ross-text:#ffffff;
+    --ross-muted:#9aa6c1;
+}
+.ross-footer-preview{
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color:var(--ross-text);
+    background:var(--ross-bg);
+    border-radius:8px;
+    padding:20px;
+    box-shadow:0 6px 18px rgba(2,6,23,0.4);
+}
+.ross-footer-preview-inner{max-width:1100px;margin:0 auto}
+.ross-footer-preview-columns{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.ross-footer-preview-col{flex:1 1 220px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:6px;border:1px solid rgba(255,255,255,0.04)}
+.ross-footer-preview-col h4{margin:0 0 8px;font-size:16px;color:var(--ross-accent)}
+.ross-footer-preview-col p,.ross-footer-preview-col ul{margin:0;font-size:13px;color:var(--ross-muted)}
+.ross-footer-preview-col ul{padding-left:18px}
+.ross-footer-preview-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.03);padding-top:12px}
+.ross-footer-preview-bottom .ross-footer-preview-social a{color:var(--ross-text);background:rgba(255,255,255,0.04);padding:6px 8px;border-radius:4px;margin-left:6px;text-decoration:none;font-size:13px}
+.ross-footer-preview-copyright{font-size:13px;color:var(--ross-muted)}
+
+/* Template variants */
+.ross-footer-preview--template1{--ross-bg:#f8f9fb;--ross-text:#0b2140;--ross-accent:#0b66a6;--ross-muted:#475569}
+.ross-footer-preview--template2{--ross-bg:#ffffff;--ross-text:#0b2140;--ross-accent:#b02a2a;--ross-muted:#475569}
+.ross-footer-preview--template3{--ross-bg:#111111;--ross-text:#f3f4f6;--ross-accent:#E5C902;--ross-muted:#9aa6c1}
+.ross-footer-preview--template4{--ross-bg:#fafafa;--ross-text:#0b2140;--ross-accent:#0b66a6;--ross-muted:#475569}
+
+/* Responsive */
+@media (max-width:800px){
+    .ross-footer-preview-columns{flex-direction:column}
+    .ross-footer-preview-bottom{flex-direction:column;gap:8px;align-items:flex-start}
+}

@@ -22,7 +22,7 @@ function ross_enqueue_customizer_assets($hook) {
     }
 
     // Enqueue customizer preview JS (only on customizer page)
-    if (is_customize_preview()) {
+    if (false && is_customize_preview()) {
         $preview_js = get_template_directory() . '/assets/js/admin/customizer-topbar-preview.js';
         if (file_exists($preview_js)) {
             wp_enqueue_script(

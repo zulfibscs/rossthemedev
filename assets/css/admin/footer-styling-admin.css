@@ -1,0 +1,38 @@
+/* Admin styles for Footer Styling tab */
+.ross-footer-templates { margin-bottom: 12px; }
+.ross-footer-templates label { display: block; margin-bottom: 6px; }
+
+/* Group styling controls into two-column layout where helpful */
+.ross-footer-styling-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+.ross-footer-styling-grid .field { display: block; }
+
+/* Make color pickers align and compact */
+.color-picker { vertical-align: middle; }
+
+#ross-styling-bg-image-preview img { max-height: 40px; margin-left: 8px; border-radius: 3px; }
+
+/* Input label compact */
+table.form-table th { vertical-align: top; padding-top: 12px; }
+
+/* Make the preview box cleaner */
+#ross-template-preview { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 4px; }
+
+/* Responsive adjustments */
+@media (max-width: 780px) {
+    .ross-footer-styling-grid { grid-template-columns: 1fr; }
+}
+
+/* Highlight input groups */
+.ross-section-note { font-size: 13px; color: #666; margin-bottom: 8px; }
+
+/* Toggle switch styles */
+.ross-toggle { display:inline-flex; align-items:center; gap:10px; cursor:pointer; }
+.ross-toggle input { display:none; }
+.ross-toggle .ross-toggle-slider { width:40px; height:22px; background:#ddd; border-radius:22px; position:relative; display:inline-block; vertical-align:middle; transition:background .15s ease; }
+.ross-toggle .ross-toggle-slider::after { content:""; width:18px; height:18px; background:#fff; border-radius:50%; position:absolute; top:2px; left:2px; box-shadow:0 1px 2px rgba(0,0,0,0.2); transition:left .12s ease; }
+.ross-toggle input:checked + .ross-toggle-slider { background:#2ea2cc; }
+.ross-toggle input:checked + .ross-toggle-slider::after { left:20px; }
+
+/* Upload button style */
+.ross-upload-button { margin-left:8px; }
+
