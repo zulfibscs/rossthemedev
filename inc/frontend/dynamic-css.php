@@ -108,11 +108,15 @@ function ross_theme_dynamic_css() {
         // Build background layers: gradient/top-overlay/image
         $bg_layers = array();
 
-        // If gradient enabled and both colors present, add gradient as top layer
-        if (!empty($footer_options['styling_bg_gradient']) && !empty($footer_options['styling_bg_gradient_from']) && !empty($footer_options['styling_bg_gradient_to'])) {
+        // Compose background based on the chosen background type
+        $bg_type = isset($footer_options['styling_bg_type']) ? $footer_options['styling_bg_type'] : 'color';
+        if ($bg_type === 'gradient' && !empty($footer_options['styling_bg_gradient_from']) && !empty($footer_options['styling_bg_gradient_to'])) {
             $from = $footer_options['styling_bg_gradient_from'];
             $to = $footer_options['styling_bg_gradient_to'];
             $bg_layers[] = 'linear-gradient(to bottom, ' . esc_attr($from) . ', ' . esc_attr($to) . ')';
+        } elseif ($bg_type === 'image' && !empty($footer_options['styling_bg_image'])) {
+            $img = esc_url($footer_options['styling_bg_image']);
+            $bg_layers[] = 'url("' . $img . '")';
         } else {
             // If an overlay color with opacity is requested, create a semi-transparent overlay layer
             if (isset($footer_options['styling_bg_opacity']) && $footer_options['styling_bg_opacity'] !== '' && $footer_options['styling_bg_opacity'] < 1 && !empty($footer_options['styling_bg_color'])) {
@@ -136,6 +140,55 @@ function ross_theme_dynamic_css() {
         if (!empty($footer_options['styling_bg_image'])) {
             $img = esc_url($footer_options['styling_bg_image']);
             $bg_layers[] = 'url("' . $img . '")';
+        }
+
+        // Overlay layer handling (topmost layer)
+        $overlay_layers = array();
+        if (!empty($footer_options['styling_overlay_enabled']) && intval($footer_options['styling_overlay_enabled'])) {
+            $overlay_type = isset($footer_options['styling_overlay_type']) ? $footer_options['styling_overlay_type'] : 'color';
+            $overlay_opacity = isset($footer_options['styling_overlay_opacity']) ? floatval($footer_options['styling_overlay_opacity']) : 0.5;
+            if ($overlay_type === 'color' && !empty($footer_options['styling_overlay_color'])) {
+                $hex = ltrim($footer_options['styling_overlay_color'], '#');
+                if (strlen($hex) === 3) {
+                    $r = hexdec(str_repeat(substr($hex,0,1),2));
+                    $g = hexdec(str_repeat(substr($hex,1,1),2));
+                    $b = hexdec(str_repeat(substr($hex,2,1),2));
+                } else {
+                    $r = hexdec(substr($hex,0,2));
+                    $g = hexdec(substr($hex,2,2));
+                    $b = hexdec(substr($hex,4,2));
+                }
+                $rgba = 'rgba(' . $r . ',' . $g . ',' . $b . ',' . $overlay_opacity . ')';
+                $overlay_layers[] = 'linear-gradient(' . $rgba . ',' . $rgba . ')';
+            }
+            if ($overlay_type === 'gradient' && !empty($footer_options['styling_overlay_gradient_from']) && !empty($footer_options['styling_overlay_gradient_to'])) {
+                $from = $footer_options['styling_overlay_gradient_from'];
+                $to = $footer_options['styling_overlay_gradient_to'];
+                // apply overlay opacity by converting from/to to rgba with opacity
+                $from_hex = ltrim($from, '#'); $to_hex = ltrim($to, '#');
+                if (strlen($from_hex) === 3) { $fr = hexdec(str_repeat(substr($from_hex,0,1),2)); $fg = hexdec(str_repeat(substr($from_hex,1,1),2)); $fb = hexdec(str_repeat(substr($from_hex,2,1),2)); } else { $fr = hexdec(substr($from_hex,0,2)); $fg = hexdec(substr($from_hex,2,2)); $fb = hexdec(substr($from_hex,4,2)); }
+                if (strlen($to_hex) === 3) { $tr = hexdec(str_repeat(substr($to_hex,0,1),2)); $tg = hexdec(str_repeat(substr($to_hex,1,1),2)); $tb = hexdec(str_repeat(substr($to_hex,2,1),2)); } else { $tr = hexdec(substr($to_hex,0,2)); $tg = hexdec(substr($to_hex,2,2)); $tb = hexdec(substr($to_hex,4,2)); }
+                $from_rgba = 'rgba(' . $fr . ',' . $fg . ',' . $fb . ',' . $overlay_opacity . ')';
+                $to_rgba = 'rgba(' . $tr . ',' . $tg . ',' . $tb . ',' . $overlay_opacity . ')';
+                $overlay_layers[] = 'linear-gradient(to bottom, ' . $from_rgba . ', ' . $to_rgba . ')';
+            }
+            if ($overlay_type === 'image' && !empty($footer_options['styling_overlay_image'])) {
+                $oi = esc_url($footer_options['styling_overlay_image']);
+                // If opacity < 1, add an overlay tint above the image to simulate shading
+                if ($overlay_opacity < 1 && !empty($footer_options['styling_overlay_color'])) {
+                    // tint overlay for better control
+                    $hex = ltrim($footer_options['styling_overlay_color'], '#');
+                    if (strlen($hex) === 3) { $r = hexdec(str_repeat(substr($hex,0,1),2)); $g = hexdec(str_repeat(substr($hex,1,1),2)); $b = hexdec(str_repeat(substr($hex,2,1),2)); } else { $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2)); }
+                    $rgba = 'rgba(' . $r . ',' . $g . ',' . $b . ',' . (1-$overlay_opacity) . ')';
+                    $overlay_layers[] = 'linear-gradient(' . $rgba . ',' . $rgba . ')';
+                }
+                $overlay_layers[] = 'url("' . $oi . '")';
+            }
+        }
+
+        // Prepend overlay layers so they sit on top
+        if (!empty($overlay_layers)) {
+            $bg_layers = array_merge($overlay_layers, $bg_layers);
         }
 
         // Always output a fallback solid background color (so color works even when image/gradient present)
@@ -177,6 +230,11 @@ function ross_theme_dynamic_css() {
         if (!empty($padding_lr)) {
             echo '.footer-widgets .container, .footer-copyright .container { padding-left: ' . intval($padding_lr) . 'px !important; padding-right: ' . intval($padding_lr) . 'px !important; }';
         }
+
+        // Column and Row gaps
+        $col_gap = isset($footer_options['styling_col_gap']) ? intval($footer_options['styling_col_gap']) : 24;
+        $row_gap = isset($footer_options['styling_row_gap']) ? intval($footer_options['styling_row_gap']) : 18;
+        echo '.footer-columns { gap: ' . $row_gap . 'px ' . $col_gap . 'px !important; grid-row-gap: ' . $row_gap . 'px !important; grid-column-gap: ' . $col_gap . 'px !important; }';
 
         // border top
         if ($border_top && $border_thickness > 0 && !empty($border_color)) {

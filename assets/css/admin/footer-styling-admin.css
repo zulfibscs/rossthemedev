@@ -22,6 +22,21 @@ table.form-table th { vertical-align: top; padding-top: 12px; }
     .ross-footer-styling-grid { grid-template-columns: 1fr; }
 }
 
+/* Alternative layout: make rows flow into two columns for better compact view. Use column layout to avoid breaking table markup. */
+.ross-footer-styling-grid { column-count: 2; column-gap: 18px; }
+.ross-footer-styling-grid .form-table { display: inline-block; width: 100%; }
+.ross-footer-styling-grid .form-table tr { display: block; break-inside: avoid; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+.ross-footer-styling-grid .form-table th { width: 100%; display: block; font-weight:600; margin-bottom: 6px; }
+.ross-footer-styling-grid .form-table td { display: block; }
+.ross-footer-styling-grid .field { display:block; }
+
+/* Remove button style */
+.ross-remove-upload { margin-left:6px; background: #eee; border: 1px solid #ccc; }
+.ross-remove-upload:hover { background:#f3f3f3; }
+
+/* Small tweak: ensure image preview aligns and has a subtle outline */
+#ross-styling-bg-image-preview img, #ross-styling-overlay-image-preview img { max-height:40px; margin-left:6px; border-radius:3px; border:1px solid rgba(0,0,0,0.08); }
+
 /* Highlight input groups */
 .ross-section-note { font-size: 13px; color: #666; margin-bottom: 8px; }
 

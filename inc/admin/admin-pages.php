@@ -276,7 +276,6 @@ function ross_theme_footer_page() {
 
         <div class="ross-tabs-nav">
             <button class="ross-tab-btn active" data-tab="layout">🧱 Layout</button>
-            <button class="ross-tab-btn" data-tab="widgets">🧰 Widgets</button>
             <button class="ross-tab-btn" data-tab="styling">🎨 Styling</button>
             <button class="ross-tab-btn" data-tab="cta">📢 CTA</button>
             <button class="ross-tab-btn" data-tab="social">🌍 Social</button>
@@ -290,9 +289,7 @@ function ross_theme_footer_page() {
                 <?php do_settings_sections('ross-theme-footer-layout'); ?>
             </div>
 
-            <div class="ross-tab-content" id="tab-widgets">
-                <?php do_settings_sections('ross-theme-footer-widgets'); ?>
-            </div>
+            <!-- Widgets section moved into Layout tab to consolidate layout-related settings -->
 
             <div class="ross-tab-content" id="tab-styling">
                 <?php do_settings_sections('ross-theme-footer-styling'); ?>
