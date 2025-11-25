@@ -136,6 +136,69 @@ class RossFooterOptions {
             'ross_footer_styling_section'
         );
 
+        // Background type selector (color | image | gradient)
+        add_settings_field(
+            'styling_bg_type',
+            'Background Type',
+            array($this, 'styling_bg_type_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        // Overlay controls
+        add_settings_field(
+            'styling_overlay_enabled',
+            'Enable Background Overlay',
+            array($this, 'styling_overlay_enabled_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        add_settings_field(
+            'styling_overlay_type',
+            'Overlay Type',
+            array($this, 'styling_overlay_type_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        // Overlay color, image, gradient
+        add_settings_field(
+            'styling_overlay_color',
+            'Overlay Color',
+            array($this, 'styling_overlay_color_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+        add_settings_field(
+            'styling_overlay_image',
+            'Overlay Image (URL)',
+            array($this, 'styling_overlay_image_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+        add_settings_field(
+            'styling_overlay_gradient_from',
+            'Overlay Gradient - From',
+            array($this, 'styling_overlay_gradient_from_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+        add_settings_field(
+            'styling_overlay_gradient_to',
+            'Overlay Gradient - To',
+            array($this, 'styling_overlay_gradient_to_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+        add_settings_field(
+            'styling_overlay_opacity',
+            'Overlay Opacity',
+            array($this, 'styling_overlay_opacity_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
         add_settings_field(
             'styling_bg_gradient_from',
             'Background Gradient - From',
@@ -156,6 +219,73 @@ class RossFooterOptions {
             'styling_bg_opacity',
             'Background Opacity (0-1)',
             array($this, 'styling_bg_opacity_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        // advanced image options
+        add_settings_field(
+            'styling_bg_size',
+            'Background Size',
+            array($this, 'styling_bg_size_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        add_settings_field(
+            'styling_bg_position',
+            'Background Position',
+            array($this, 'styling_bg_position_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        add_settings_field(
+            'styling_bg_repeat',
+            'Background Repeat',
+            array($this, 'styling_bg_repeat_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        add_settings_field(
+            'styling_bg_attachment',
+            'Background Attachment',
+            array($this, 'styling_bg_attachment_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        add_settings_field(
+            'styling_bg_blend_mode',
+            'Background Blend Mode',
+            array($this, 'styling_bg_blend_mode_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        // Overlay blend mode
+        add_settings_field(
+            'styling_overlay_blend_mode',
+            'Overlay Blend Mode',
+            array($this, 'styling_overlay_blend_mode_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        // Advanced
+        add_settings_field(
+            'styling_border_radius',
+            'Border Radius (px)',
+            array($this, 'styling_border_radius_callback'),
+            'ross-theme-footer-styling',
+            'ross_footer_styling_section'
+        );
+
+        add_settings_field(
+            'styling_box_shadow',
+            'Box Shadow',
+            array($this, 'styling_box_shadow_callback'),
             'ross-theme-footer-styling',
             'ross_footer_styling_section'
         );
@@ -190,6 +320,8 @@ class RossFooterOptions {
 
     public function styling_section_callback() {
         echo '<p>Fine-grained visual controls for the footer. These settings affect frontend appearance.</p>';
+        // open the grid container for two-column layout
+        echo '<div class="ross-footer-styling-grid">';
     }
 
     // Styling field callbacks
@@ -220,17 +352,165 @@ class RossFooterOptions {
 
     public function styling_bg_image_callback() {
         $v = isset($this->options['styling_bg_image']) ? $this->options['styling_bg_image'] : '';
-        echo '<input type="text" id="ross-styling-bg-image" name="ross_theme_footer_options[styling_bg_image]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." /> <button type="button" class="button ross-upload-button" data-target="#ross-styling-bg-image">Upload</button>';
+        echo '<div class="field">';
+        echo '<input type="text" id="ross-styling-bg-image" name="ross_theme_footer_options[styling_bg_image]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." />';
+        echo ' <button type="button" class="button ross-upload-button" data-target="ross-styling-bg-image" data-input-name="ross_theme_footer_options[styling_bg_image]">Upload</button>';
+        echo ' <button type="button" class="button ross-remove-upload" data-target="ross-styling-bg-image">Remove</button>';
+        echo '<input type="hidden" id="ross-styling-bg-image-id" name="ross_theme_footer_options[styling_bg_image_id]" value="' . esc_attr(isset($this->options['styling_bg_image_id']) ? $this->options['styling_bg_image_id'] : '') . '" />';
         echo '&nbsp;<span id="ross-styling-bg-image-preview">';
         if (!empty($v)) {
             echo '<img src="' . esc_url($v) . '" style="max-height:40px;vertical-align:middle;border:1px solid #ddd;padding:2px;" />';
         }
         echo '</span>';
+        echo '</div>';
+    }
+
+    public function styling_bg_type_callback() {
+        $v = isset($this->options['styling_bg_type']) ? $this->options['styling_bg_type'] : 'color';
+        ?>
+        <select name="ross_theme_footer_options[styling_bg_type]" id="styling_bg_type">
+            <option value="color" <?php selected($v,'color'); ?>>Color</option>
+            <option value="image" <?php selected($v,'image'); ?>>Image</option>
+            <option value="gradient" <?php selected($v,'gradient'); ?>>Gradient</option>
+        </select>
+        <?php
+    }
+
+    public function styling_overlay_enabled_callback() {
+        $v = isset($this->options['styling_overlay_enabled']) ? $this->options['styling_overlay_enabled'] : 0;
+        echo '<label class="ross-toggle">';
+        echo '<input type="checkbox" name="ross_theme_footer_options[styling_overlay_enabled]" value="1" ' . checked(1, $v, false) . ' />';
+        echo '<span class="ross-toggle-slider"></span> Enable Overlay';
+        echo '</label>';
+    }
+
+    public function styling_overlay_type_callback() {
+        $v = isset($this->options['styling_overlay_type']) ? $this->options['styling_overlay_type'] : 'color';
+        ?>
+        <select name="ross_theme_footer_options[styling_overlay_type]" id="styling_overlay_type">
+            <option value="color" <?php selected($v,'color'); ?>>Color</option>
+            <option value="image" <?php selected($v,'image'); ?>>Image</option>
+            <option value="gradient" <?php selected($v,'gradient'); ?>>Gradient</option>
+        </select>
+        <?php
+    }
+
+    public function styling_overlay_color_callback() {
+        $v = isset($this->options['styling_overlay_color']) ? $this->options['styling_overlay_color'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[styling_overlay_color]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function styling_overlay_image_callback() {
+        $v = isset($this->options['styling_overlay_image']) ? $this->options['styling_overlay_image'] : '';
+        echo '<div class="field">';
+        echo '<input type="text" id="ross-styling-overlay-image" name="ross_theme_footer_options[styling_overlay_image]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." />';
+        echo ' <button type="button" class="button ross-upload-button" data-target="ross-styling-overlay-image" data-input-name="ross_theme_footer_options[styling_overlay_image]">Upload</button>';
+        echo ' <button type="button" class="button ross-remove-upload" data-target="ross-styling-overlay-image">Remove</button>';
+        echo '<input type="hidden" id="ross-styling-overlay-image-id" name="ross_theme_footer_options[styling_overlay_image_id]" value="' . esc_attr(isset($this->options['styling_overlay_image_id']) ? $this->options['styling_overlay_image_id'] : '') . '" />';
+        echo '&nbsp;<span id="ross-styling-overlay-image-preview">';
+        if (!empty($v)) {
+            echo '<img src="' . esc_url($v) . '" style="max-height:40px;vertical-align:middle;border:1px solid #ddd;padding:2px;" />';
+        }
+        echo '</span>';
+        echo '</div>';
+    }
+
+    public function styling_overlay_gradient_from_callback() {
+        $v = isset($this->options['styling_overlay_gradient_from']) ? $this->options['styling_overlay_gradient_from'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[styling_overlay_gradient_from]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function styling_overlay_gradient_to_callback() {
+        $v = isset($this->options['styling_overlay_gradient_to']) ? $this->options['styling_overlay_gradient_to'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[styling_overlay_gradient_to]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function styling_overlay_opacity_callback() {
+        $v = isset($this->options['styling_overlay_opacity']) ? $this->options['styling_overlay_opacity'] : '0.5';
+        echo '<input type="number" step="0.1" min="0" max="1" name="ross_theme_footer_options[styling_overlay_opacity]" value="' . esc_attr($v) . '" class="small-text" />';
     }
 
     public function styling_bg_opacity_callback() {
         $v = isset($this->options['styling_bg_opacity']) ? $this->options['styling_bg_opacity'] : '1';
         echo '<input type="number" step="0.1" min="0" max="1" name="ross_theme_footer_options[styling_bg_opacity]" value="' . esc_attr($v) . '" class="small-text" />';
+    }
+
+    public function styling_bg_size_callback() {
+        $v = isset($this->options['styling_bg_size']) ? $this->options['styling_bg_size'] : 'cover';
+        ?>
+        <select name="ross_theme_footer_options[styling_bg_size]">
+            <option value="cover" <?php selected($v, 'cover'); ?>>Cover</option>
+            <option value="contain" <?php selected($v, 'contain'); ?>>Contain</option>
+            <option value="auto" <?php selected($v, 'auto'); ?>>Auto</option>
+        </select>
+        <?php
+    }
+
+    public function styling_bg_position_callback() {
+        $v = isset($this->options['styling_bg_position']) ? $this->options['styling_bg_position'] : 'center';
+        ?>
+        <select name="ross_theme_footer_options[styling_bg_position]">
+            <option value="center" <?php selected($v, 'center'); ?>>Center</option>
+            <option value="top" <?php selected($v, 'top'); ?>>Top</option>
+            <option value="bottom" <?php selected($v, 'bottom'); ?>>Bottom</option>
+            <option value="left" <?php selected($v, 'left'); ?>>Left</option>
+            <option value="right" <?php selected($v, 'right'); ?>>Right</option>
+        </select>
+        <?php
+    }
+
+    public function styling_bg_repeat_callback() {
+        $v = isset($this->options['styling_bg_repeat']) ? $this->options['styling_bg_repeat'] : 'no-repeat';
+        ?>
+        <select name="ross_theme_footer_options[styling_bg_repeat]">
+            <option value="no-repeat" <?php selected($v, 'no-repeat'); ?>>No Repeat</option>
+            <option value="repeat" <?php selected($v, 'repeat'); ?>>Repeat</option>
+        </select>
+        <?php
+    }
+
+    public function styling_bg_attachment_callback() {
+        $v = isset($this->options['styling_bg_attachment']) ? $this->options['styling_bg_attachment'] : 'scroll';
+        ?>
+        <select name="ross_theme_footer_options[styling_bg_attachment]">
+            <option value="scroll" <?php selected($v, 'scroll'); ?>>Scroll</option>
+            <option value="fixed" <?php selected($v, 'fixed'); ?>>Fixed</option>
+        </select>
+        <?php
+    }
+
+    public function styling_bg_blend_mode_callback() {
+        $v = isset($this->options['styling_bg_blend_mode']) ? $this->options['styling_bg_blend_mode'] : 'normal';
+        ?>
+        <select name="ross_theme_footer_options[styling_bg_blend_mode]">
+            <option value="normal" <?php selected($v, 'normal'); ?>>Normal</option>
+            <option value="multiply" <?php selected($v, 'multiply'); ?>>Multiply</option>
+            <option value="overlay" <?php selected($v, 'overlay'); ?>>Overlay</option>
+            <option value="screen" <?php selected($v, 'screen'); ?>>Screen</option>
+        </select>
+        <?php
+    }
+
+    public function styling_overlay_blend_mode_callback() {
+        $v = isset($this->options['styling_overlay_blend_mode']) ? $this->options['styling_overlay_blend_mode'] : 'normal';
+        ?>
+        <select name="ross_theme_footer_options[styling_overlay_blend_mode]">
+            <option value="normal" <?php selected($v, 'normal'); ?>>Normal</option>
+            <option value="multiply" <?php selected($v, 'multiply'); ?>>Multiply</option>
+            <option value="overlay" <?php selected($v, 'overlay'); ?>>Overlay</option>
+            <option value="screen" <?php selected($v, 'screen'); ?>>Screen</option>
+        </select>
+        <?php
+    }
+
+    public function styling_border_radius_callback() {
+        $v = isset($this->options['styling_border_radius']) ? $this->options['styling_border_radius'] : 0;
+        echo '<input type="number" min="0" name="ross_theme_footer_options[styling_border_radius]" value="' . esc_attr($v) . '" class="small-text" /> px';
+    }
+
+    public function styling_box_shadow_callback() {
+        $v = isset($this->options['styling_box_shadow']) ? $this->options['styling_box_shadow'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[styling_box_shadow]" value="' . esc_attr($v) . '" class="regular-text" placeholder="0 2px 6px rgba(0,0,0,0.12)" />';
     }
 
     // Padding callbacks
@@ -321,6 +601,8 @@ class RossFooterOptions {
     public function styling_widget_title_size_callback() {
         $v = isset($this->options['styling_widget_title_size']) ? $this->options['styling_widget_title_size'] : '16';
         echo '<input type="number" name="ross_theme_footer_options[styling_widget_title_size]" value="' . esc_attr($v) . '" class="small-text" /> px';
+        // close the grid container
+        echo '</div>';
     }
     
     private function add_layout_section() {
@@ -361,18 +643,19 @@ class RossFooterOptions {
     }
     
     private function add_widgets_section() {
+        // Moved Widgets section into Layout page (was on a separate Widgets tab). This consolidates layout-related controls.
         add_settings_section(
             'ross_footer_widgets_section',
             '🧰 Footer Widgets',
             array($this, 'widgets_section_callback'),
-            'ross-theme-footer-widgets'
+            'ross-theme-footer-layout'
         );
         
         add_settings_field(
             'enable_widgets',
             'Enable Widgets Area',
             array($this, 'enable_widgets_callback'),
-            'ross-theme-footer-widgets',
+            'ross-theme-footer-layout',
             'ross_footer_widgets_section'
         );
         
@@ -380,7 +663,7 @@ class RossFooterOptions {
             'widgets_bg_color',
             'Background Color',
             array($this, 'widgets_bg_color_callback'),
-            'ross-theme-footer-widgets',
+            'ross-theme-footer-layout',
             'ross_footer_widgets_section'
         );
         
@@ -388,7 +671,7 @@ class RossFooterOptions {
             'widgets_text_color',
             'Text Color',
             array($this, 'widgets_text_color_callback'),
-            'ross-theme-footer-widgets',
+            'ross-theme-footer-layout',
             'ross_footer_widgets_section'
         );
         
@@ -396,7 +679,7 @@ class RossFooterOptions {
             'widget_title_color',
             'Widget Title Color',
             array($this, 'widget_title_color_callback'),
-            'ross-theme-footer-widgets',
+            'ross-theme-footer-layout',
             'ross_footer_widgets_section'
         );
 
@@ -405,7 +688,7 @@ class RossFooterOptions {
             'use_template_colors',
             'Use Template Default Colors',
             array($this, 'use_template_colors_callback'),
-            'ross-theme-footer-widgets',
+            'ross-theme-footer-layout',
             'ross_footer_widgets_section'
         );
 
@@ -413,7 +696,7 @@ class RossFooterOptions {
             'template_custom_colors',
             'Template Custom Colors',
             array($this, 'template_custom_colors_callback'),
-            'ross-theme-footer-widgets',
+            'ross-theme-footer-layout',
             'ross_footer_widgets_section'
         );
     }
@@ -1235,6 +1518,8 @@ class RossFooterOptions {
         $sanitized['styling_bg_color'] = isset($input['styling_bg_color']) ? sanitize_hex_color($input['styling_bg_color']) : '';
         $sanitized['styling_bg_gradient'] = isset($input['styling_bg_gradient']) ? 1 : 0;
         $sanitized['styling_bg_image'] = isset($input['styling_bg_image']) ? esc_url_raw($input['styling_bg_image']) : '';
+        $sanitized['styling_bg_image_id'] = isset($input['styling_bg_image_id']) ? absint($input['styling_bg_image_id']) : '';
+        $sanitized['styling_bg_type'] = isset($input['styling_bg_type']) && in_array($input['styling_bg_type'], array('color','image','gradient')) ? sanitize_text_field($input['styling_bg_type']) : 'color';
         $sanitized['styling_bg_opacity'] = isset($input['styling_bg_opacity']) ? floatval($input['styling_bg_opacity']) : '1';
         $sanitized['styling_bg_gradient_from'] = isset($input['styling_bg_gradient_from']) ? sanitize_hex_color($input['styling_bg_gradient_from']) : '';
         $sanitized['styling_bg_gradient_to'] = isset($input['styling_bg_gradient_to']) ? sanitize_hex_color($input['styling_bg_gradient_to']) : '';
@@ -1258,9 +1543,28 @@ class RossFooterOptions {
         $sanitized['styling_border_top'] = isset($input['styling_border_top']) ? 1 : 0;
         $sanitized['styling_border_color'] = isset($input['styling_border_color']) ? sanitize_hex_color($input['styling_border_color']) : '';
         $sanitized['styling_border_thickness'] = isset($input['styling_border_thickness']) ? absint($input['styling_border_thickness']) : 1;
+        $sanitized['styling_bg_size'] = isset($input['styling_bg_size']) && in_array($input['styling_bg_size'], array('cover','contain','auto')) ? sanitize_text_field($input['styling_bg_size']) : 'cover';
+        $allowed_pos = array('center','top','bottom','left','right');
+        $sanitized['styling_bg_position'] = isset($input['styling_bg_position']) && in_array($input['styling_bg_position'], $allowed_pos) ? sanitize_text_field($input['styling_bg_position']) : 'center';
+        $sanitized['styling_bg_repeat'] = isset($input['styling_bg_repeat']) && in_array($input['styling_bg_repeat'], array('no-repeat','repeat')) ? sanitize_text_field($input['styling_bg_repeat']) : 'no-repeat';
+        $sanitized['styling_bg_attachment'] = isset($input['styling_bg_attachment']) && in_array($input['styling_bg_attachment'], array('scroll','fixed')) ? sanitize_text_field($input['styling_bg_attachment']) : 'scroll';
+        $allowed_blend = array('normal','multiply','overlay','screen');
+        $sanitized['styling_bg_blend_mode'] = isset($input['styling_bg_blend_mode']) && in_array($input['styling_bg_blend_mode'], $allowed_blend) ? sanitize_text_field($input['styling_bg_blend_mode']) : 'normal';
+        $sanitized['styling_overlay_blend_mode'] = isset($input['styling_overlay_blend_mode']) && in_array($input['styling_overlay_blend_mode'], $allowed_blend) ? sanitize_text_field($input['styling_overlay_blend_mode']) : 'normal';
+        $sanitized['styling_border_radius'] = isset($input['styling_border_radius']) ? absint($input['styling_border_radius']) : 0;
+        $sanitized['styling_box_shadow'] = isset($input['styling_box_shadow']) ? sanitize_text_field($input['styling_box_shadow']) : '';
 
         $sanitized['styling_widget_title_color'] = isset($input['styling_widget_title_color']) ? sanitize_hex_color($input['styling_widget_title_color']) : '';
         $sanitized['styling_widget_title_size'] = isset($input['styling_widget_title_size']) ? absint($input['styling_widget_title_size']) : 16;
+        // Overlay sanitization
+        $sanitized['styling_overlay_enabled'] = isset($input['styling_overlay_enabled']) ? 1 : 0;
+        $sanitized['styling_overlay_type'] = isset($input['styling_overlay_type']) && in_array($input['styling_overlay_type'], array('color','image','gradient')) ? sanitize_text_field($input['styling_overlay_type']) : 'color';
+        $sanitized['styling_overlay_color'] = isset($input['styling_overlay_color']) ? sanitize_hex_color($input['styling_overlay_color']) : '';
+        $sanitized['styling_overlay_image'] = isset($input['styling_overlay_image']) ? esc_url_raw($input['styling_overlay_image']) : '';
+        $sanitized['styling_overlay_image_id'] = isset($input['styling_overlay_image_id']) ? absint($input['styling_overlay_image_id']) : '';
+        $sanitized['styling_overlay_gradient_from'] = isset($input['styling_overlay_gradient_from']) ? sanitize_hex_color($input['styling_overlay_gradient_from']) : '';
+        $sanitized['styling_overlay_gradient_to'] = isset($input['styling_overlay_gradient_to']) ? sanitize_hex_color($input['styling_overlay_gradient_to']) : '';
+        $sanitized['styling_overlay_opacity'] = isset($input['styling_overlay_opacity']) ? floatval($input['styling_overlay_opacity']) : 0.5;
         // Template selection & custom colors
         $sanitized['footer_template'] = isset($input['footer_template']) ? sanitize_text_field($input['footer_template']) : 'template1';
         $sanitized['use_template_colors'] = isset($input['use_template_colors']) ? 1 : 0;
