@@ -223,73 +223,6 @@ class RossFooterOptions {
             'ross_footer_styling_section'
         );
 
-        // advanced image options
-        add_settings_field(
-            'styling_bg_size',
-            'Background Size',
-            array($this, 'styling_bg_size_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        add_settings_field(
-            'styling_bg_position',
-            'Background Position',
-            array($this, 'styling_bg_position_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        add_settings_field(
-            'styling_bg_repeat',
-            'Background Repeat',
-            array($this, 'styling_bg_repeat_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        add_settings_field(
-            'styling_bg_attachment',
-            'Background Attachment',
-            array($this, 'styling_bg_attachment_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        add_settings_field(
-            'styling_bg_blend_mode',
-            'Background Blend Mode',
-            array($this, 'styling_bg_blend_mode_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        // Overlay blend mode
-        add_settings_field(
-            'styling_overlay_blend_mode',
-            'Overlay Blend Mode',
-            array($this, 'styling_overlay_blend_mode_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        // Advanced
-        add_settings_field(
-            'styling_border_radius',
-            'Border Radius (px)',
-            array($this, 'styling_border_radius_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
-        add_settings_field(
-            'styling_box_shadow',
-            'Box Shadow',
-            array($this, 'styling_box_shadow_callback'),
-            'ross-theme-footer-styling',
-            'ross_footer_styling_section'
-        );
-
         // SECTION 2: Text & Links
         add_settings_field('styling_text_color','Text Color',array($this,'styling_text_color_callback'),'ross-theme-footer-styling','ross_footer_styling_section');
         add_settings_field('styling_link_color','Link Color',array($this,'styling_link_color_callback'),'ross-theme-footer-styling','ross_footer_styling_section');
@@ -433,84 +366,6 @@ class RossFooterOptions {
     public function styling_bg_opacity_callback() {
         $v = isset($this->options['styling_bg_opacity']) ? $this->options['styling_bg_opacity'] : '1';
         echo '<input type="number" step="0.1" min="0" max="1" name="ross_theme_footer_options[styling_bg_opacity]" value="' . esc_attr($v) . '" class="small-text" />';
-    }
-
-    public function styling_bg_size_callback() {
-        $v = isset($this->options['styling_bg_size']) ? $this->options['styling_bg_size'] : 'cover';
-        ?>
-        <select name="ross_theme_footer_options[styling_bg_size]">
-            <option value="cover" <?php selected($v, 'cover'); ?>>Cover</option>
-            <option value="contain" <?php selected($v, 'contain'); ?>>Contain</option>
-            <option value="auto" <?php selected($v, 'auto'); ?>>Auto</option>
-        </select>
-        <?php
-    }
-
-    public function styling_bg_position_callback() {
-        $v = isset($this->options['styling_bg_position']) ? $this->options['styling_bg_position'] : 'center';
-        ?>
-        <select name="ross_theme_footer_options[styling_bg_position]">
-            <option value="center" <?php selected($v, 'center'); ?>>Center</option>
-            <option value="top" <?php selected($v, 'top'); ?>>Top</option>
-            <option value="bottom" <?php selected($v, 'bottom'); ?>>Bottom</option>
-            <option value="left" <?php selected($v, 'left'); ?>>Left</option>
-            <option value="right" <?php selected($v, 'right'); ?>>Right</option>
-        </select>
-        <?php
-    }
-
-    public function styling_bg_repeat_callback() {
-        $v = isset($this->options['styling_bg_repeat']) ? $this->options['styling_bg_repeat'] : 'no-repeat';
-        ?>
-        <select name="ross_theme_footer_options[styling_bg_repeat]">
-            <option value="no-repeat" <?php selected($v, 'no-repeat'); ?>>No Repeat</option>
-            <option value="repeat" <?php selected($v, 'repeat'); ?>>Repeat</option>
-        </select>
-        <?php
-    }
-
-    public function styling_bg_attachment_callback() {
-        $v = isset($this->options['styling_bg_attachment']) ? $this->options['styling_bg_attachment'] : 'scroll';
-        ?>
-        <select name="ross_theme_footer_options[styling_bg_attachment]">
-            <option value="scroll" <?php selected($v, 'scroll'); ?>>Scroll</option>
-            <option value="fixed" <?php selected($v, 'fixed'); ?>>Fixed</option>
-        </select>
-        <?php
-    }
-
-    public function styling_bg_blend_mode_callback() {
-        $v = isset($this->options['styling_bg_blend_mode']) ? $this->options['styling_bg_blend_mode'] : 'normal';
-        ?>
-        <select name="ross_theme_footer_options[styling_bg_blend_mode]">
-            <option value="normal" <?php selected($v, 'normal'); ?>>Normal</option>
-            <option value="multiply" <?php selected($v, 'multiply'); ?>>Multiply</option>
-            <option value="overlay" <?php selected($v, 'overlay'); ?>>Overlay</option>
-            <option value="screen" <?php selected($v, 'screen'); ?>>Screen</option>
-        </select>
-        <?php
-    }
-
-    public function styling_overlay_blend_mode_callback() {
-        $v = isset($this->options['styling_overlay_blend_mode']) ? $this->options['styling_overlay_blend_mode'] : 'normal';
-        ?>
-        <select name="ross_theme_footer_options[styling_overlay_blend_mode]">
-            <option value="normal" <?php selected($v, 'normal'); ?>>Normal</option>
-            <option value="multiply" <?php selected($v, 'multiply'); ?>>Multiply</option>
-            <option value="overlay" <?php selected($v, 'overlay'); ?>>Overlay</option>
-            <option value="screen" <?php selected($v, 'screen'); ?>>Screen</option>
-        </select>
-        <?php
-    }
-
-    public function styling_border_radius_callback() {
-        $v = isset($this->options['styling_border_radius']) ? $this->options['styling_border_radius'] : 0;
-        echo '<input type="number" min="0" name="ross_theme_footer_options[styling_border_radius]" value="' . esc_attr($v) . '" class="small-text" /> px';
-    }
-
-    public function styling_box_shadow_callback() {
-        $v = isset($this->options['styling_box_shadow']) ? $this->options['styling_box_shadow'] : '';
-        echo '<input type="text" name="ross_theme_footer_options[styling_box_shadow]" value="' . esc_attr($v) . '" class="regular-text" placeholder="0 2px 6px rgba(0,0,0,0.12)" />';
     }
 
     // Padding callbacks
@@ -709,6 +564,7 @@ class RossFooterOptions {
             'ross-theme-footer-cta'
         );
         
+        // Visibility
         add_settings_field(
             'enable_footer_cta',
             'Enable CTA Section',
@@ -716,7 +572,22 @@ class RossFooterOptions {
             'ross-theme-footer-cta',
             'ross_footer_cta_section'
         );
-        
+        add_settings_field(
+            'cta_always_visible',
+            'Always Show CTA',
+            array($this, 'cta_always_visible_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_display_on',
+            'Display On',
+            array($this, 'cta_display_on_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+
+        // Content
         add_settings_field(
             'cta_title',
             'CTA Title',
@@ -724,7 +595,13 @@ class RossFooterOptions {
             'ross-theme-footer-cta',
             'ross_footer_cta_section'
         );
-        
+        add_settings_field(
+            'cta_text',
+            'CTA Subtitle / Text',
+            array($this, 'cta_text_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
         add_settings_field(
             'cta_button_text',
             'CTA Button Text',
@@ -732,11 +609,201 @@ class RossFooterOptions {
             'ross-theme-footer-cta',
             'ross_footer_cta_section'
         );
-        
+        add_settings_field(
+            'cta_button_url',
+            'Button URL',
+            array($this, 'cta_button_url_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_icon',
+            'CTA Icon',
+            array($this, 'cta_icon_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+
+        // Layout
+        add_settings_field(
+            'cta_alignment',
+            'Alignment',
+            array($this, 'cta_alignment_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_layout_direction',
+            'Layout Direction',
+            array($this, 'cta_layout_direction_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_layout_wrap',
+            'Allow Wrap',
+            array($this, 'cta_layout_wrap_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_layout_justify',
+            'Justify',
+            array($this, 'cta_layout_justify_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_layout_align',
+            'Align Items',
+            array($this, 'cta_layout_align_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_gap',
+            'Gap Between Items (px)',
+            array($this, 'cta_gap_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+
+        // Styling
+        add_settings_field(
+            'cta_bg_type',
+            'Background Type',
+            array($this, 'cta_bg_type_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
         add_settings_field(
             'cta_bg_color',
             'CTA Background Color',
             array($this, 'cta_bg_color_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_bg_gradient_from',
+            'CTA Gradient - From',
+            array($this, 'cta_bg_gradient_from_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_bg_gradient_to',
+            'CTA Gradient - To',
+            array($this, 'cta_bg_gradient_to_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_bg_image',
+            'CTA Background Image',
+            array($this, 'cta_bg_image_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_text_color',
+            'CTA Text Color',
+            array($this, 'cta_text_color_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_button_bg_color',
+            'CTA Button Background',
+            array($this, 'cta_button_bg_color_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_button_text_color',
+            'CTA Button Text Color',
+            array($this, 'cta_button_text_color_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_padding_top',
+            'Padding Top (px)',
+            array($this, 'cta_padding_top_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_padding_right',
+            'Padding Right (px)',
+            array($this, 'cta_padding_right_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_padding_bottom',
+            'Padding Bottom (px)',
+            array($this, 'cta_padding_bottom_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_padding_left',
+            'Padding Left (px)',
+            array($this, 'cta_padding_left_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+
+        add_settings_field(
+            'cta_icon_color',
+            'CTA Icon Color',
+            array($this, 'cta_icon_color_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+
+        // Animation
+        add_settings_field(
+            'cta_animation',
+            'CTA Animation',
+            array($this, 'cta_animation_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'cta_anim_delay',
+            'Animation Delay (ms)',
+            array($this, 'cta_anim_delay_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+
+        // Advanced
+        add_settings_field(
+            'enable_custom_cta',
+            'Enable Custom CTA Content',
+            array($this, 'enable_custom_cta_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'custom_cta_html',
+            'Custom CTA HTML',
+            array($this, 'custom_cta_html_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'custom_cta_css',
+            'Custom CTA CSS',
+            array($this, 'custom_cta_css_callback'),
+            'ross-theme-footer-cta',
+            'ross_footer_cta_section'
+        );
+        add_settings_field(
+            'custom_cta_js',
+            'Custom CTA JS',
+            array($this, 'custom_cta_js_callback'),
             'ross-theme-footer-cta',
             'ross_footer_cta_section'
         );
@@ -1400,6 +1467,207 @@ class RossFooterOptions {
         <input type="text" name="ross_theme_footer_options[cta_bg_color]" value="<?php echo esc_attr($value); ?>" class="color-picker" data-default-color="#E5C902" />
         <?php
     }
+
+    public function cta_always_visible_callback() {
+        $v = isset($this->options['cta_always_visible']) ? $this->options['cta_always_visible'] : 0;
+        echo '<label class="ross-toggle">';
+        echo '<input type="checkbox" name="ross_theme_footer_options[cta_always_visible]" value="1" ' . checked(1, $v, false) . ' />';
+        echo '<span class="ross-toggle-slider"></span> Always show CTA (ignore conditional visibility)';
+        echo '</label>';
+    }
+
+    public function cta_display_on_callback() {
+        $v = isset($this->options['cta_display_on']) ? $this->options['cta_display_on'] : array('all');
+        if (!is_array($v)) $v = array($v);
+        $choices = array('all' => 'Everywhere', 'front' => 'Front Page', 'home' => 'Blog Index', 'single' => 'Single Posts', 'page' => 'Pages', 'archive' => 'Archives');
+        foreach ($choices as $key => $label) {
+            $checked = in_array($key, $v, true) ? 'checked="checked"' : '';
+            echo '<label style="display:block;margin-right:12px;">';
+            echo '<input type="checkbox" name="ross_theme_footer_options[cta_display_on][]" value="' . esc_attr($key) . '" ' . $checked . ' /> ' . esc_html($label);
+            echo '</label>';
+        }
+        echo '<p class="description">Select where the CTA appears when enabled. Use "Everywhere" to show on all pages.</p>';
+    }
+
+    public function cta_text_callback() {
+        $v = isset($this->options['cta_text']) ? $this->options['cta_text'] : '';
+        echo '<textarea name="ross_theme_footer_options[cta_text]" rows="3" class="large-text">' . esc_textarea($v) . '</textarea>';
+    }
+
+    public function cta_button_url_callback() {
+        $v = isset($this->options['cta_button_url']) ? $this->options['cta_button_url'] : '';
+        echo '<input type="url" name="ross_theme_footer_options[cta_button_url]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." />';
+    }
+
+    public function cta_icon_callback() {
+        $v = isset($this->options['cta_icon']) ? $this->options['cta_icon'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_icon]" value="' . esc_attr($v) . '" class="regular-text" placeholder="fa fa-arrow-right (class name)" />';
+        echo '<p class="description">Set an icon class name to show an icon next to the CTA button (font-awesome / theme icons).</p>';
+    }
+
+    public function cta_alignment_callback() {
+        $v = isset($this->options['cta_alignment']) ? $this->options['cta_alignment'] : 'center';
+        ?>
+        <select name="ross_theme_footer_options[cta_alignment]">
+            <option value="left" <?php selected($v, 'left'); ?>>Left</option>
+            <option value="center" <?php selected($v, 'center'); ?>>Center</option>
+            <option value="right" <?php selected($v, 'right'); ?>>Right</option>
+        </select>
+        <?php
+    }
+
+    public function cta_layout_direction_callback() {
+        $v = isset($this->options['cta_layout_direction']) ? $this->options['cta_layout_direction'] : 'row';
+        ?>
+        <select name="ross_theme_footer_options[cta_layout_direction]">
+            <option value="row" <?php selected($v, 'row'); ?>>Horizontal</option>
+            <option value="column" <?php selected($v, 'column'); ?>>Vertical</option>
+        </select>
+        <?php
+    }
+
+    public function cta_layout_wrap_callback() {
+        $v = isset($this->options['cta_layout_wrap']) ? $this->options['cta_layout_wrap'] : 0;
+        echo '<input type="checkbox" name="ross_theme_footer_options[cta_layout_wrap]" value="1" ' . checked(1, $v, false) . ' /> Allow wrap to next line on small viewports';
+    }
+
+    public function cta_layout_justify_callback() {
+        $v = isset($this->options['cta_layout_justify']) ? $this->options['cta_layout_justify'] : 'center';
+        ?>
+        <select name="ross_theme_footer_options[cta_layout_justify]">
+            <option value="flex-start" <?php selected($v, 'flex-start'); ?>>Left (flex-start)</option>
+            <option value="center" <?php selected($v, 'center'); ?>>Center</option>
+            <option value="flex-end" <?php selected($v, 'flex-end'); ?>>Right (flex-end)</option>
+            <option value="space-between" <?php selected($v, 'space-between'); ?>>Space Between</option>
+            <option value="space-around" <?php selected($v, 'space-around'); ?>>Space Around</option>
+        </select>
+        <?php
+    }
+
+    public function cta_layout_align_callback() {
+        $v = isset($this->options['cta_layout_align']) ? $this->options['cta_layout_align'] : 'center';
+        ?>
+        <select name="ross_theme_footer_options[cta_layout_align]">
+            <option value="flex-start" <?php selected($v, 'flex-start'); ?>>Top</option>
+            <option value="center" <?php selected($v, 'center'); ?>>Center</option>
+            <option value="flex-end" <?php selected($v, 'flex-end'); ?>>Bottom</option>
+        </select>
+        <?php
+    }
+
+    public function cta_gap_callback() {
+        $v = isset($this->options['cta_gap']) ? intval($this->options['cta_gap']) : 12;
+        echo '<input type="number" name="ross_theme_footer_options[cta_gap]" value="' . esc_attr($v) . '" class="small-text" /> px';
+    }
+
+    public function cta_bg_type_callback() {
+        $v = isset($this->options['cta_bg_type']) ? $this->options['cta_bg_type'] : 'color';
+        ?>
+        <select name="ross_theme_footer_options[cta_bg_type]">
+            <option value="color" <?php selected($v,'color'); ?>>Color</option>
+            <option value="image" <?php selected($v,'image'); ?>>Image</option>
+            <option value="gradient" <?php selected($v,'gradient'); ?>>Gradient</option>
+        </select>
+        <?php
+    }
+
+    public function cta_bg_gradient_from_callback() {
+        $v = isset($this->options['cta_bg_gradient_from']) ? $this->options['cta_bg_gradient_from'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_bg_gradient_from]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function cta_bg_gradient_to_callback() {
+        $v = isset($this->options['cta_bg_gradient_to']) ? $this->options['cta_bg_gradient_to'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_bg_gradient_to]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function cta_bg_image_callback() {
+        $v = isset($this->options['cta_bg_image']) ? $this->options['cta_bg_image'] : '';
+        echo '<input type="text" id="ross-cta-bg-image" name="ross_theme_footer_options[cta_bg_image]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." />';
+        echo ' <button type="button" class="button ross-upload-button" data-target="ross-cta-bg-image" data-input-name="ross_theme_footer_options[cta_bg_image]">Upload</button>';
+        echo '<input type="hidden" id="ross-cta-bg-image-id" name="ross_theme_footer_options[cta_bg_image_id]" value="' . esc_attr(isset($this->options['cta_bg_image_id']) ? $this->options['cta_bg_image_id'] : '') . '" />';
+        echo '&nbsp;<span id="ross-cta-bg-image-preview">';
+        if (!empty($v)) {
+            echo '<img src="' . esc_url($v) . '" style="max-height:40px;vertical-align:middle;border:1px solid #ddd;padding:2px;" />';
+        }
+        echo '</span>';
+    }
+
+    public function cta_text_color_callback() {
+        $v = isset($this->options['cta_text_color']) ? $this->options['cta_text_color'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_text_color]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function cta_button_bg_color_callback() {
+        $v = isset($this->options['cta_button_bg_color']) ? $this->options['cta_button_bg_color'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_button_bg_color]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function cta_button_text_color_callback() {
+        $v = isset($this->options['cta_button_text_color']) ? $this->options['cta_button_text_color'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_button_text_color]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function cta_padding_top_callback() {
+        $v = isset($this->options['cta_padding_top']) ? intval($this->options['cta_padding_top']) : 24;
+        echo '<input type="number" name="ross_theme_footer_options[cta_padding_top]" value="' . esc_attr($v) . '" class="small-text" /> px';
+    }
+    public function cta_padding_right_callback() {
+        $v = isset($this->options['cta_padding_right']) ? intval($this->options['cta_padding_right']) : 0;
+        echo '<input type="number" name="ross_theme_footer_options[cta_padding_right]" value="' . esc_attr($v) . '" class="small-text" /> px';
+    }
+    public function cta_padding_bottom_callback() {
+        $v = isset($this->options['cta_padding_bottom']) ? intval($this->options['cta_padding_bottom']) : 24;
+        echo '<input type="number" name="ross_theme_footer_options[cta_padding_bottom]" value="' . esc_attr($v) . '" class="small-text" /> px';
+    }
+    public function cta_padding_left_callback() {
+        $v = isset($this->options['cta_padding_left']) ? intval($this->options['cta_padding_left']) : 0;
+        echo '<input type="number" name="ross_theme_footer_options[cta_padding_left]" value="' . esc_attr($v) . '" class="small-text" /> px';
+    }
+
+    public function cta_icon_color_callback() {
+        $v = isset($this->options['cta_icon_color']) ? $this->options['cta_icon_color'] : '';
+        echo '<input type="text" name="ross_theme_footer_options[cta_icon_color]" value="' . esc_attr($v) . '" class="color-picker" />';
+    }
+
+    public function cta_animation_callback() {
+        $v = isset($this->options['cta_animation']) ? $this->options['cta_animation'] : 'none';
+        ?>
+        <select name="ross_theme_footer_options[cta_animation]">
+            <option value="none" <?php selected($v,'none'); ?>>None</option>
+            <option value="fade" <?php selected($v,'fade'); ?>>Fade</option>
+            <option value="slide" <?php selected($v,'slide'); ?>>Slide Up</option>
+            <option value="pop" <?php selected($v,'pop'); ?>>Pop</option>
+            <option value="zoom" <?php selected($v,'zoom'); ?>>Zoom</option>
+        </select>
+        <?php
+    }
+
+    public function cta_anim_delay_callback() {
+        $v = isset($this->options['cta_anim_delay']) ? intval($this->options['cta_anim_delay']) : 150;
+        echo '<input type="number" name="ross_theme_footer_options[cta_anim_delay]" value="' . esc_attr($v) . '" class="small-text" /> ms';
+    }
+
+    public function enable_custom_cta_callback() {
+        $v = isset($this->options['enable_custom_cta']) ? $this->options['enable_custom_cta'] : 0;
+        echo '<input type="checkbox" name="ross_theme_footer_options[enable_custom_cta]" value="1" ' . checked(1, $v, false) . ' />';
+        echo ' <label for="enable_custom_cta">Use custom CTA HTML/CSS instead of the built-in CTA</label>';
+    }
+
+    public function custom_cta_html_callback() {
+        $v = isset($this->options['custom_cta_html']) ? $this->options['custom_cta_html'] : '';
+        echo '<textarea name="ross_theme_footer_options[custom_cta_html]" rows="6" class="large-text">' . esc_textarea($v) . '</textarea>';
+    }
+
+    public function custom_cta_css_callback() {
+        $v = isset($this->options['custom_cta_css']) ? $this->options['custom_cta_css'] : '';
+        echo '<textarea name="ross_theme_footer_options[custom_cta_css]" rows="6" class="large-text" placeholder="Any additional CSS to apply to the CTA">' . esc_textarea($v) . '</textarea>';
+    }
+
+    public function custom_cta_js_callback() {
+        $v = isset($this->options['custom_cta_js']) ? $this->options['custom_cta_js'] : '';
+        echo '<textarea name="ross_theme_footer_options[custom_cta_js]" rows="6" class="large-text" placeholder="Custom JS for the CTA (will be escaped)">' . esc_textarea($v) . '</textarea>';
+    }
     
     // Field Callbacks - Social Section
     public function enable_social_icons_callback() {
@@ -1543,16 +1811,6 @@ class RossFooterOptions {
         $sanitized['styling_border_top'] = isset($input['styling_border_top']) ? 1 : 0;
         $sanitized['styling_border_color'] = isset($input['styling_border_color']) ? sanitize_hex_color($input['styling_border_color']) : '';
         $sanitized['styling_border_thickness'] = isset($input['styling_border_thickness']) ? absint($input['styling_border_thickness']) : 1;
-        $sanitized['styling_bg_size'] = isset($input['styling_bg_size']) && in_array($input['styling_bg_size'], array('cover','contain','auto')) ? sanitize_text_field($input['styling_bg_size']) : 'cover';
-        $allowed_pos = array('center','top','bottom','left','right');
-        $sanitized['styling_bg_position'] = isset($input['styling_bg_position']) && in_array($input['styling_bg_position'], $allowed_pos) ? sanitize_text_field($input['styling_bg_position']) : 'center';
-        $sanitized['styling_bg_repeat'] = isset($input['styling_bg_repeat']) && in_array($input['styling_bg_repeat'], array('no-repeat','repeat')) ? sanitize_text_field($input['styling_bg_repeat']) : 'no-repeat';
-        $sanitized['styling_bg_attachment'] = isset($input['styling_bg_attachment']) && in_array($input['styling_bg_attachment'], array('scroll','fixed')) ? sanitize_text_field($input['styling_bg_attachment']) : 'scroll';
-        $allowed_blend = array('normal','multiply','overlay','screen');
-        $sanitized['styling_bg_blend_mode'] = isset($input['styling_bg_blend_mode']) && in_array($input['styling_bg_blend_mode'], $allowed_blend) ? sanitize_text_field($input['styling_bg_blend_mode']) : 'normal';
-        $sanitized['styling_overlay_blend_mode'] = isset($input['styling_overlay_blend_mode']) && in_array($input['styling_overlay_blend_mode'], $allowed_blend) ? sanitize_text_field($input['styling_overlay_blend_mode']) : 'normal';
-        $sanitized['styling_border_radius'] = isset($input['styling_border_radius']) ? absint($input['styling_border_radius']) : 0;
-        $sanitized['styling_box_shadow'] = isset($input['styling_box_shadow']) ? sanitize_text_field($input['styling_box_shadow']) : '';
 
         $sanitized['styling_widget_title_color'] = isset($input['styling_widget_title_color']) ? sanitize_hex_color($input['styling_widget_title_color']) : '';
         $sanitized['styling_widget_title_size'] = isset($input['styling_widget_title_size']) ? absint($input['styling_widget_title_size']) : 16;
@@ -1583,9 +1841,53 @@ class RossFooterOptions {
         
         // CTA
         $sanitized['enable_footer_cta'] = isset($input['enable_footer_cta']) ? 1 : 0;
-        $sanitized['cta_title'] = sanitize_text_field($input['cta_title']);
-        $sanitized['cta_button_text'] = sanitize_text_field($input['cta_button_text']);
-        $sanitized['cta_bg_color'] = sanitize_hex_color($input['cta_bg_color']);
+        $sanitized['cta_title'] = isset($input['cta_title']) ? sanitize_text_field($input['cta_title']) : '';
+        $sanitized['cta_text'] = isset($input['cta_text']) ? wp_kses_post($input['cta_text']) : '';
+        $sanitized['cta_button_text'] = isset($input['cta_button_text']) ? sanitize_text_field($input['cta_button_text']) : '';
+        $sanitized['cta_button_url'] = isset($input['cta_button_url']) ? esc_url_raw($input['cta_button_url']) : '';
+        $sanitized['cta_icon'] = isset($input['cta_icon']) ? sanitize_text_field($input['cta_icon']) : '';
+        $sanitized['cta_bg_color'] = isset($input['cta_bg_color']) ? sanitize_hex_color($input['cta_bg_color']) : '';
+        $sanitized['cta_bg_type'] = isset($input['cta_bg_type']) && in_array($input['cta_bg_type'], array('color','image','gradient')) ? sanitize_text_field($input['cta_bg_type']) : 'color';
+        $sanitized['cta_bg_image'] = isset($input['cta_bg_image']) ? esc_url_raw($input['cta_bg_image']) : '';
+        $sanitized['cta_bg_image_id'] = isset($input['cta_bg_image_id']) ? absint($input['cta_bg_image_id']) : '';
+        $sanitized['cta_bg_gradient_from'] = isset($input['cta_bg_gradient_from']) ? sanitize_hex_color($input['cta_bg_gradient_from']) : '';
+        $sanitized['cta_bg_gradient_to'] = isset($input['cta_bg_gradient_to']) ? sanitize_hex_color($input['cta_bg_gradient_to']) : '';
+        $sanitized['cta_text_color'] = isset($input['cta_text_color']) ? sanitize_hex_color($input['cta_text_color']) : '';
+        $sanitized['cta_button_bg_color'] = isset($input['cta_button_bg_color']) ? sanitize_hex_color($input['cta_button_bg_color']) : '';
+        $sanitized['cta_button_text_color'] = isset($input['cta_button_text_color']) ? sanitize_hex_color($input['cta_button_text_color']) : '';
+        $sanitized['cta_padding_top'] = isset($input['cta_padding_top']) ? absint($input['cta_padding_top']) : 24;
+        $sanitized['cta_padding_right'] = isset($input['cta_padding_right']) ? absint($input['cta_padding_right']) : 0;
+        $sanitized['cta_padding_bottom'] = isset($input['cta_padding_bottom']) ? absint($input['cta_padding_bottom']) : 24;
+        $sanitized['cta_padding_left'] = isset($input['cta_padding_left']) ? absint($input['cta_padding_left']) : 0;
+        $sanitized['cta_icon_color'] = isset($input['cta_icon_color']) ? sanitize_hex_color($input['cta_icon_color']) : '';
+        // Layout & alignment
+        $sanitized['cta_alignment'] = isset($input['cta_alignment']) && in_array($input['cta_alignment'], array('left','center','right')) ? sanitize_text_field($input['cta_alignment']) : 'center';
+        $sanitized['cta_layout_direction'] = isset($input['cta_layout_direction']) && in_array($input['cta_layout_direction'], array('row','column')) ? sanitize_text_field($input['cta_layout_direction']) : 'row';
+        $sanitized['cta_layout_wrap'] = isset($input['cta_layout_wrap']) ? 1 : 0;
+        $allowed_justify = array('flex-start','center','flex-end','space-between','space-around');
+        $sanitized['cta_layout_justify'] = isset($input['cta_layout_justify']) && in_array($input['cta_layout_justify'], $allowed_justify) ? sanitize_text_field($input['cta_layout_justify']) : 'center';
+        $allowed_align = array('flex-start','center','flex-end');
+        $sanitized['cta_layout_align'] = isset($input['cta_layout_align']) && in_array($input['cta_layout_align'], $allowed_align) ? sanitize_text_field($input['cta_layout_align']) : 'center';
+        $sanitized['cta_gap'] = isset($input['cta_gap']) ? absint($input['cta_gap']) : 12;
+        $sanitized['cta_animation'] = isset($input['cta_animation']) && in_array($input['cta_animation'], array('none','fade','slide','pop','zoom')) ? sanitize_text_field($input['cta_animation']) : 'none';
+        $sanitized['cta_anim_delay'] = isset($input['cta_anim_delay']) ? absint($input['cta_anim_delay']) : 150;
+        // Visibility
+        $sanitized['cta_always_visible'] = isset($input['cta_always_visible']) ? 1 : 0;
+        if (!empty($input['cta_display_on']) && is_array($input['cta_display_on'])) {
+            $allowed = array('all','front','home','single','page','archive');
+            $san = array();
+            foreach ($input['cta_display_on'] as $v) {
+                if (in_array($v, $allowed, true)) $san[] = sanitize_text_field($v);
+            }
+            $sanitized['cta_display_on'] = $san;
+        } else {
+            $sanitized['cta_display_on'] = array('all');
+        }
+        // Advanced custom CTA
+        $sanitized['enable_custom_cta'] = isset($input['enable_custom_cta']) ? 1 : 0;
+        $sanitized['custom_cta_html'] = isset($input['custom_cta_html']) ? wp_kses($input['custom_cta_html'], array('a'=>array('href'=>array(),'title'=>array(),'target'=>array()),'br'=>array(),'strong'=>array(),'em'=>array(),'p'=>array(),'span'=>array(),'div'=>array(),'ul'=>array(),'li'=>array())) : '';
+        $sanitized['custom_cta_css'] = isset($input['custom_cta_css']) ? wp_strip_all_tags($input['custom_cta_css']) : '';
+        $sanitized['custom_cta_js'] = isset($input['custom_cta_js']) ? wp_strip_all_tags($input['custom_cta_js']) : '';
         
         // Social
         $sanitized['enable_social_icons'] = isset($input['enable_social_icons']) ? 1 : 0;

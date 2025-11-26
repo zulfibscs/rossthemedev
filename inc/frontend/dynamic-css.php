@@ -248,6 +248,94 @@ function ross_theme_dynamic_css() {
         if (!empty($widget_title_size)) {
             echo '.footer-widgets .widget-title, .footer-widgets h4 { font-size: ' . intval($widget_title_size) . 'px !important; }';
         }
+
+        // CTA Styling — generate if CTA will be visible (either enabled or always visible)
+        $should_show_cta = function_exists('ross_theme_should_show_footer_cta') ? ross_theme_should_show_footer_cta() : (isset($footer_options['enable_footer_cta']) && $footer_options['enable_footer_cta']);
+        if ($should_show_cta) {
+        $cta_bg = isset($footer_options['cta_bg_color']) ? sanitize_hex_color($footer_options['cta_bg_color']) : '';
+        $cta_bg_type = isset($footer_options['cta_bg_type']) ? $footer_options['cta_bg_type'] : 'color';
+        $cta_bg_img = isset($footer_options['cta_bg_image']) ? esc_url($footer_options['cta_bg_image']) : '';
+        $cta_grad_from = isset($footer_options['cta_bg_gradient_from']) ? sanitize_hex_color($footer_options['cta_bg_gradient_from']) : '';
+        $cta_grad_to = isset($footer_options['cta_bg_gradient_to']) ? sanitize_hex_color($footer_options['cta_bg_gradient_to']) : '';
+        $cta_text_color = isset($footer_options['cta_text_color']) ? sanitize_hex_color($footer_options['cta_text_color']) : '';
+        $cta_button_bg = isset($footer_options['cta_button_bg_color']) ? sanitize_hex_color($footer_options['cta_button_bg_color']) : '';
+        $cta_button_text_color = isset($footer_options['cta_button_text_color']) ? sanitize_hex_color($footer_options['cta_button_text_color']) : '';
+        $cta_alignment = isset($footer_options['cta_alignment']) ? sanitize_text_field($footer_options['cta_alignment']) : 'center';
+        $cta_gap = isset($footer_options['cta_gap']) ? intval($footer_options['cta_gap']) : 12;
+        $cta_padding_top = isset($footer_options['cta_padding_top']) ? intval($footer_options['cta_padding_top']) : 24;
+        $cta_padding_right = isset($footer_options['cta_padding_right']) ? intval($footer_options['cta_padding_right']) : 0;
+        $cta_padding_bottom = isset($footer_options['cta_padding_bottom']) ? intval($footer_options['cta_padding_bottom']) : 24;
+        $cta_padding_left = isset($footer_options['cta_padding_left']) ? intval($footer_options['cta_padding_left']) : 0;
+
+        if ($cta_bg_type === 'color' && !empty($cta_bg)) {
+            echo '.footer-cta { background-color: ' . esc_attr($cta_bg) . ' !important; }';
+        }
+        if ($cta_bg_type === 'gradient' && !empty($cta_grad_from) && !empty($cta_grad_to)) {
+            echo '.footer-cta { background-image: linear-gradient(to right, ' . esc_attr($cta_grad_from) . ', ' . esc_attr($cta_grad_to) . ') !important; }';
+        }
+        if ($cta_bg_type === 'image' && !empty($cta_bg_img)) {
+            echo '.footer-cta { background-image: url("' . esc_url($cta_bg_img) . '") !important; background-size: cover !important; background-position: center center !important; }';
+        }
+        if (!empty($cta_text_color)) {
+            echo '.footer-cta, .footer-cta .footer-cta-text, .footer-cta h2, .footer-cta h3 { color: ' . esc_attr($cta_text_color) . ' !important; }';
+        }
+        if (!empty($cta_button_bg)) {
+            echo '.footer-cta .btn { background: ' . esc_attr($cta_button_bg) . ' !important; }';
+        }
+        if (!empty($cta_button_text_color)) {
+            echo '.footer-cta .btn { color: ' . esc_attr($cta_button_text_color) . ' !important; }';
+        }
+        echo '.footer-cta { padding: ' . intval($cta_padding_top) . 'px ' . intval($cta_padding_right) . 'px ' . intval($cta_padding_bottom) . 'px ' . intval($cta_padding_left) . 'px !important; }';
+        // alignment
+        if (!empty($cta_alignment)) {
+            $justify = 'center';
+            if ($cta_alignment === 'left') $justify = 'flex-start';
+            if ($cta_alignment === 'right') $justify = 'flex-end';
+            echo '.footer-cta .footer-cta-inner { display: flex; align-items: center; justify-content: ' . $justify . ' !important; gap: ' . intval($cta_gap) . 'px !important; }';
+        }
+        // Icon color
+        if (!empty($footer_options['cta_icon_color'])) {
+            echo '.footer-cta .cta-icon { color: ' . esc_attr($footer_options['cta_icon_color']) . ' !important; }';
+        }
+
+        // Layout specifics (direction, wrap, justify, align)
+        $dir = isset($footer_options['cta_layout_direction']) ? $footer_options['cta_layout_direction'] : 'row';
+        $wrap = isset($footer_options['cta_layout_wrap']) && $footer_options['cta_layout_wrap'] ? 'wrap' : 'nowrap';
+        $justify = isset($footer_options['cta_layout_justify']) ? $footer_options['cta_layout_justify'] : 'center';
+        $align = isset($footer_options['cta_layout_align']) ? $footer_options['cta_layout_align'] : 'center';
+        echo '.footer-cta .footer-cta-inner { flex-direction: ' . esc_attr($dir) . ' !important; flex-wrap: ' . esc_attr($wrap) . ' !important; justify-content:' . esc_attr($justify) . ' !important; align-items:' . esc_attr($align) . ' !important; }';
+
+            // small animations
+            if (isset($footer_options['cta_animation']) && $footer_options['cta_animation'] !== 'none') {
+            $anim = $footer_options['cta_animation'];
+            $anim_delay = isset($footer_options['cta_anim_delay']) ? intval($footer_options['cta_anim_delay']) : 150;
+            $anim_delay_s = max(0.0, floatval($anim_delay / 1000.0));
+            if ($anim === 'fade') {
+                echo '.footer-cta--anim-fade { opacity: 0; transform: translateY(6px); transition: opacity 400ms ease, transform 400ms ease; }';
+                echo '.footer-cta--anim-fade.visible { opacity: 1; transform: none; }';
+                echo '.footer-cta--anim-fade { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            if ($anim === 'slide') {
+                echo '.footer-cta--anim-slide { opacity: 0; transform: translateY(12px); transition: opacity 500ms ease, transform 500ms ease; }';
+                echo '.footer-cta--anim-slide.visible { opacity: 1; transform: none; }';
+                echo '.footer-cta--anim-slide { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            if ($anim === 'pop') {
+                echo '.footer-cta--anim-pop { opacity: 0; transform: scale(.96); transition: opacity 350ms ease, transform 350ms ease; }';
+                echo '.footer-cta--anim-pop.visible { opacity: 1; transform: scale(1); }';
+                echo '.footer-cta--anim-pop { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            if ($anim === 'zoom') {
+                echo '.footer-cta--anim-zoom { opacity: 0; transform: scale(.95); transition: opacity 400ms ease, transform 400ms ease; }';
+                echo '.footer-cta--anim-zoom.visible { opacity: 1; transform: scale(1.02); }';
+                echo '.footer-cta--anim-zoom { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            }
+        }
+        // Custom CTA CSS (advanced)
+        if (!empty($footer_options['enable_custom_cta']) && !empty($footer_options['custom_cta_css'])) {
+            echo $footer_options['custom_cta_css'];
+        }
     }
     
     // Apply general colors

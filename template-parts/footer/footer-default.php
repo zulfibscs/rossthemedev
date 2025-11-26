@@ -12,16 +12,7 @@
     $pad_right = isset($footer_options['styling_padding_right']) && $footer_options['styling_padding_right'] !== '' ? intval($footer_options['styling_padding_right']) : (isset($footer_options['styling_padding_lr']) ? intval($footer_options['styling_padding_lr']) : 20);
     echo 'style="padding-top:' . esc_attr($pad_top) . 'px; padding-bottom:' . esc_attr($pad_bottom) . 'px; padding-left:' . esc_attr($pad_left) . 'px; padding-right:' . esc_attr($pad_right) . 'px;"';
 ?>>
-    <?php if (ross_theme_should_show_footer_cta()): ?>
-        <div class="footer-cta">
-            <div class="container">
-                <h3><?php echo esc_html($footer_options['cta_title'] ?? ''); ?></h3>
-                <a href="/contact" class="btn btn-primary">
-                    <?php echo esc_html($footer_options['cta_button_text'] ?? ''); ?>
-                </a>
-            </div>
-        </div>
-    <?php endif; ?>
+    <?php // CTA is rendered outside the footer by ross_theme_display_footer_cta() ?>
 
     <?php if (ross_theme_should_show_footer_widgets()):
         // Allow selected template to influence default columns/social position

@@ -51,7 +51,36 @@ function ross_theme_should_show_footer_widgets() {
 
 function ross_theme_should_show_footer_cta() {
     $footer_options = get_option('ross_theme_footer_options');
-    return isset($footer_options['enable_footer_cta']) ? $footer_options['enable_footer_cta'] : false;
+    // Developer override: allow defining ROSS_DISABLE_CTA to globally disable CTA
+    if (defined('ROSS_DISABLE_CTA') && ROSS_DISABLE_CTA) {
+        return false;
+    }
+    // Always-visible override
+    if (!empty($footer_options['cta_always_visible'])) {
+        return true;
+    }
+
+    // Respect the enable toggle; fall back to false
+    $enabled = isset($footer_options['enable_footer_cta']) ? (bool) $footer_options['enable_footer_cta'] : false;
+    if (!$enabled) return false;
+
+    // If enabled, optionally check 'cta_display_on' for template-specific visibility
+    if (!empty($footer_options['cta_display_on']) && is_array($footer_options['cta_display_on'])) {
+        $visible_on = $footer_options['cta_display_on'];
+        // If 'all' selected, show everywhere
+        if (in_array('all', $visible_on, true)) return true;
+        // Front page
+        if (in_array('front', $visible_on, true) && is_front_page()) return true;
+        if (in_array('home', $visible_on, true) && is_home()) return true;
+        if (in_array('single', $visible_on, true) && is_single()) return true;
+        if (in_array('page', $visible_on, true) && is_page()) return true;
+        if (in_array('archive', $visible_on, true) && is_archive()) return true;
+
+        // No matching visibility: do not show.
+        return false;
+    }
+
+    return $enabled;
 }
 
 function ross_theme_should_show_social_icons() {
@@ -87,3 +116,15 @@ function ross_theme_register_footer_sidebars() {
     }
 }
 add_action('widgets_init', 'ross_theme_register_footer_sidebars');
+
+/**
+ * Display the optional footer CTA — placed OUTSIDE the <footer> element.
+ * This allows CTA to be shown above the footer rather than inside it.
+ */
+function ross_theme_display_footer_cta() {
+    if (!function_exists('ross_theme_should_show_footer_cta') || !ross_theme_should_show_footer_cta()) {
+        return;
+    }
+    // Use get_template_part so developers can override markup in child themes
+    get_template_part('template-parts/footer/footer-cta');
+}
