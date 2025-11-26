@@ -114,9 +114,6 @@ function ross_theme_dynamic_css() {
             $from = $footer_options['styling_bg_gradient_from'];
             $to = $footer_options['styling_bg_gradient_to'];
             $bg_layers[] = 'linear-gradient(to bottom, ' . esc_attr($from) . ', ' . esc_attr($to) . ')';
-        } elseif ($bg_type === 'image' && !empty($footer_options['styling_bg_image'])) {
-            $img = esc_url($footer_options['styling_bg_image']);
-            $bg_layers[] = 'url("' . $img . '")';
         } else {
             // If an overlay color with opacity is requested, create a semi-transparent overlay layer
             if (isset($footer_options['styling_bg_opacity']) && $footer_options['styling_bg_opacity'] !== '' && $footer_options['styling_bg_opacity'] < 1 && !empty($footer_options['styling_bg_color'])) {
@@ -136,8 +133,10 @@ function ross_theme_dynamic_css() {
             }
         }
 
-        // If an image provided, add it as the bottom layer
-        if (!empty($footer_options['styling_bg_image'])) {
+        // If image is provided and the selected background type is 'image', add it as the bottom layer
+        // (Avoid adding the image when the background type is 'color' because the image would hide the
+        //  solid color and make color changes invisible unless user toggles the type.)
+        if ($bg_type === 'image' && !empty($footer_options['styling_bg_image'])) {
             $img = esc_url($footer_options['styling_bg_image']);
             $bg_layers[] = 'url("' . $img . '")';
         }

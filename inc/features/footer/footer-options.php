@@ -320,8 +320,6 @@ class RossFooterOptions {
 
     public function styling_section_callback() {
         echo '<p>Fine-grained visual controls for the footer. These settings affect frontend appearance.</p>';
-        // open the grid container for two-column layout
-        echo '<div class="ross-footer-styling-grid">';
     }
 
     // Styling field callbacks
@@ -352,17 +350,14 @@ class RossFooterOptions {
 
     public function styling_bg_image_callback() {
         $v = isset($this->options['styling_bg_image']) ? $this->options['styling_bg_image'] : '';
-        echo '<div class="field">';
         echo '<input type="text" id="ross-styling-bg-image" name="ross_theme_footer_options[styling_bg_image]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." />';
         echo ' <button type="button" class="button ross-upload-button" data-target="ross-styling-bg-image" data-input-name="ross_theme_footer_options[styling_bg_image]">Upload</button>';
-        echo ' <button type="button" class="button ross-remove-upload" data-target="ross-styling-bg-image">Remove</button>';
         echo '<input type="hidden" id="ross-styling-bg-image-id" name="ross_theme_footer_options[styling_bg_image_id]" value="' . esc_attr(isset($this->options['styling_bg_image_id']) ? $this->options['styling_bg_image_id'] : '') . '" />';
         echo '&nbsp;<span id="ross-styling-bg-image-preview">';
         if (!empty($v)) {
             echo '<img src="' . esc_url($v) . '" style="max-height:40px;vertical-align:middle;border:1px solid #ddd;padding:2px;" />';
         }
         echo '</span>';
-        echo '</div>';
     }
 
     public function styling_bg_type_callback() {
@@ -402,17 +397,14 @@ class RossFooterOptions {
 
     public function styling_overlay_image_callback() {
         $v = isset($this->options['styling_overlay_image']) ? $this->options['styling_overlay_image'] : '';
-        echo '<div class="field">';
         echo '<input type="text" id="ross-styling-overlay-image" name="ross_theme_footer_options[styling_overlay_image]" value="' . esc_attr($v) . '" class="regular-text" placeholder="https://..." />';
         echo ' <button type="button" class="button ross-upload-button" data-target="ross-styling-overlay-image" data-input-name="ross_theme_footer_options[styling_overlay_image]">Upload</button>';
-        echo ' <button type="button" class="button ross-remove-upload" data-target="ross-styling-overlay-image">Remove</button>';
         echo '<input type="hidden" id="ross-styling-overlay-image-id" name="ross_theme_footer_options[styling_overlay_image_id]" value="' . esc_attr(isset($this->options['styling_overlay_image_id']) ? $this->options['styling_overlay_image_id'] : '') . '" />';
         echo '&nbsp;<span id="ross-styling-overlay-image-preview">';
         if (!empty($v)) {
             echo '<img src="' . esc_url($v) . '" style="max-height:40px;vertical-align:middle;border:1px solid #ddd;padding:2px;" />';
         }
         echo '</span>';
-        echo '</div>';
     }
 
     public function styling_overlay_gradient_from_callback() {
@@ -601,8 +593,6 @@ class RossFooterOptions {
     public function styling_widget_title_size_callback() {
         $v = isset($this->options['styling_widget_title_size']) ? $this->options['styling_widget_title_size'] : '16';
         echo '<input type="number" name="ross_theme_footer_options[styling_widget_title_size]" value="' . esc_attr($v) . '" class="small-text" /> px';
-        // close the grid container
-        echo '</div>';
     }
     
     private function add_layout_section() {

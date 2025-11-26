@@ -149,42 +149,6 @@ jQuery(document).ready(function($) {
         // Open the frame
         $btn.data('frame').open();
     });
-
-    // Remove uploaded image (clear url, id and preview)
-    $(document).on('click', '.ross-remove-upload', function(e) {
-        e.preventDefault();
-        var $btn = $(this);
-        var target = $btn.data('target');
-        var $input = null;
-        if (target) {
-            var normalized = target;
-            if (normalized.indexOf('#') === 0) normalized = normalized.substring(1);
-            if ($('#' + normalized).length) $input = $('#' + normalized);
-            if (!$input || !$input.length) $input = $('input[name="ross_theme_footer_options[' + normalized + ']"]');
-        }
-        // else: try to find input in same container
-        if ((!$input || !$input.length)) {
-            $input = $btn.closest('tr, .form-field, .field, .form-table, div').find('input[type="text"], input[type="url"]').first();
-        }
-        if ($input && $input.length) {
-            // find hidden id input
-            var idInput = $('#' + $input.attr('id') + '-id');
-            if (idInput && idInput.length) idInput.val('').trigger('change');
-            // clear url
-            $input.val('').trigger('change');
-            // clear preview
-            var previewEl = null;
-            var iid = $input.attr('id');
-            if (iid && $('#' + iid + '-preview').length) {
-                previewEl = $('#' + iid + '-preview');
-            } else if ($input.attr('name') && $input.attr('name').indexOf('[styling_overlay_image]') !== -1 && $('#ross-styling-overlay-image-preview').length) {
-                previewEl = $('#ross-styling-overlay-image-preview');
-            } else if ($('#ross-styling-bg-image-preview').length) {
-                previewEl = $('#ross-styling-bg-image-preview');
-            }
-            if (previewEl && previewEl.length) previewEl.html('');
-        }
-    });
     
     // Conditional logic for widgets
     function toggleWidgetsFields() {
@@ -304,17 +268,6 @@ jQuery(document).ready(function($) {
             $('[name="ross_theme_footer_options[styling_bg_gradient_from]"]').closest('tr').show();
             $('[name="ross_theme_footer_options[styling_bg_gradient_to]"]').closest('tr').show();
         }
-        // if not image, clear image url / id and preview so we don't leave stale values
-        if (type !== 'image') {
-            var $bgInput = $('input[name="ross_theme_footer_options[styling_bg_image]"]');
-            if ($bgInput.length) {
-                var bgId = $('#' + $bgInput.attr('id') + '-id');
-                if (bgId && bgId.length) bgId.val('').trigger('change');
-                $bgInput.val('').trigger('change');
-            }
-            var $preview = $('#ross-styling-bg-image-preview');
-            if ($preview.length) $preview.html('');
-        }
     }
 
     function updateOverlayFields() {
@@ -347,17 +300,6 @@ jQuery(document).ready(function($) {
             $('[name="ross_theme_footer_options[styling_overlay_gradient_from]"]').closest('tr').show();
             $('[name="ross_theme_footer_options[styling_overlay_gradient_to]"]').closest('tr').show();
         }
-        // if overlay disabled or not image type, clear overlay image fields and preview
-        if (!enabled || type !== 'image') {
-            var $overlayInput = $('input[name="ross_theme_footer_options[styling_overlay_image]"]');
-            if ($overlayInput.length) {
-                var ovId = $('#' + $overlayInput.attr('id') + '-id');
-                if (ovId && ovId.length) ovId.val('').trigger('change');
-                $overlayInput.val('').trigger('change');
-            }
-            var $overlayPreview = $('#ross-styling-overlay-image-preview');
-            if ($overlayPreview.length) $overlayPreview.html('');
-        }
     }
 
     // Toggle gradient fields when checkbox toggled
@@ -387,6 +329,56 @@ jQuery(document).ready(function($) {
         }
         container.show();
     });
+
+    // Live admin preview: update colors/background on change so admin can see immediate effect
+    function updateAdminPreview() {
+        var preview = $('#ross-template-preview .ross-footer-preview');
+        if (!preview.length) return;
+
+        // Helper to set CSS variable on preview root
+        function setVar(name, value) {
+            try { preview.get(0).style.setProperty(name, value); } catch(e) {}
+        }
+
+        // Update basic colors from inputs
+        var bg = $('[name="ross_theme_footer_options[styling_bg_color]"]').val();
+        var text = $('[name="ross_theme_footer_options[styling_text_color]"]').val();
+        var accent = $('[name="ross_theme_footer_options[styling_link_color]"]').val();
+        var muted = $('input[name="ross_theme_footer_options[widgets_text_color]"]').val() || '#9aa6c1';
+        if (bg) setVar('--ross-bg', bg);
+        if (text) setVar('--ross-text', text);
+        if (accent) setVar('--ross-accent', accent);
+        if (muted) setVar('--ross-muted', muted);
+
+        // Background type handling: color/image/gradient
+        var type = $('[name="ross_theme_footer_options[styling_bg_type]"]').val();
+        if (type === 'image') {
+            var imgUrl = $('[name="ross_theme_footer_options[styling_bg_image]"]').val();
+            if (imgUrl) {
+                preview.css('background-image', 'url("' + imgUrl + '")');
+            } else {
+                preview.css('background-image', '');
+            }
+        } else if (type === 'gradient') {
+            var gFrom = $('[name="ross_theme_footer_options[styling_bg_gradient_from]"]').val();
+            var gTo = $('[name="ross_theme_footer_options[styling_bg_gradient_to]"]').val();
+            if (gFrom && gTo) {
+                preview.css('background-image', 'linear-gradient(to bottom,' + gFrom + ',' + gTo + ')');
+            }
+        } else {
+            // default to color clear bg-image so CSS var takes effect
+            preview.css('background-image', '');
+        }
+    }
+
+    // Bind live preview updates to specific relevant fields
+    $(document).on('change keyup', '[name="ross_theme_footer_options[styling_bg_color]"], [name="ross_theme_footer_options[styling_text_color]"], [name="ross_theme_footer_options[styling_link_color]"], [name="ross_theme_footer_options[widgets_text_color]"], [name="ross_theme_footer_options[styling_bg_gradient_from]"], [name="ross_theme_footer_options[styling_bg_gradient_to]"]', function(){ updateAdminPreview(); });
+    // Also re-run when bg type or image changes
+    $(document).on('change', '[name="ross_theme_footer_options[styling_bg_type]"]', updateAdminPreview);
+    $(document).on('change', '[name="ross_theme_footer_options[styling_bg_image]"]', updateAdminPreview);
+
+    // Run once on load so preview uses current state
+    updateAdminPreview();
 
     // Apply template (delegated handler + debug)
     $(document).on('click', '#ross-apply-template', function(e) {
