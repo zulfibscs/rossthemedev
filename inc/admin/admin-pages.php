@@ -296,6 +296,14 @@ function ross_theme_footer_page() {
             </div>
 
             <div class="ross-tab-content" id="tab-cta">
+                <div class="ross-cta-subtabs-nav" style="margin-bottom:1rem;">
+                    <button type="button" class="ross-cta-tab-btn active" data-section="ross_footer_cta_visibility">Visibility</button>
+                    <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_content">Content</button>
+                    <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_layout">Layout</button>
+                    <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_styling">Styling</button>
+                    <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_animation">Animation</button>
+                    <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_advanced">Advanced</button>
+                </div>
                 <?php do_settings_sections('ross-theme-footer-cta'); ?>
             </div>
 
@@ -318,6 +326,10 @@ function ross_theme_footer_page() {
         .ross-theme-admin .ross-tab-btn.active { background:white; border-bottom-color:#0073aa; color:#0073aa; }
         .ross-theme-admin .ross-tab-content { display:none; background:white; padding:1.5rem; border:1px solid #ccc; margin-bottom:1.5rem; }
         .ross-theme-admin .ross-tab-content.active { display:block; }
+        /* CTA Subtabs */
+        .ross-cta-subtabs-nav { display:flex; gap:0.5rem; margin-bottom: 1rem; flex-wrap:wrap; }
+        .ross-cta-tab-btn { padding:0.4rem 0.75rem; background:#f9f9f9; border:none; border-bottom:2px solid transparent; cursor:pointer; font-weight:600; }
+        .ross-cta-tab-btn.active { background:#fff; border-bottom-color:#0073aa; color:#0073aa; }
     </style>
 
     <script>
@@ -334,6 +346,44 @@ function ross_theme_footer_page() {
                 document.getElementById('tab-' + tab).classList.add('active');
             });
         });
+        // CTA Subtab behavior
+        var ctaTabBtns = document.querySelectorAll('.ross-cta-tab-btn');
+        if (ctaTabBtns && ctaTabBtns.length) {
+            var ctaSectionIds = ['ross_footer_cta_visibility','ross_footer_cta_content','ross_footer_cta_layout','ross_footer_cta_styling','ross_footer_cta_animation','ross_footer_cta_advanced'];
+            function hideCtaSections() {
+                ctaSectionIds.forEach(function(id) {
+                    var h = document.getElementById(id);
+                    if (!h) return;
+                    h.style.display = 'none';
+                    var s = h.nextElementSibling;
+                    while(s && !(s.tagName && s.tagName.toLowerCase() === 'table' && s.classList.contains('form-table'))) s = s.nextElementSibling;
+                    if (s) s.style.display = 'none';
+                });
+            }
+            function showCtaSection(id) {
+                var h = document.getElementById(id);
+                if (!h) return;
+                h.style.display = '';
+                var s = h.nextElementSibling;
+                while(s && !(s.tagName && s.tagName.toLowerCase() === 'table' && s.classList.contains('form-table'))) s = s.nextElementSibling;
+                if (s) s.style.display = '';
+            }
+
+            hideCtaSections();
+            showCtaSection('ross_footer_cta_visibility'); // default
+
+            ctaTabBtns.forEach(function(btn){
+                btn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    var section = this.getAttribute('data-section');
+                    // set active style
+                    ctaTabBtns.forEach(function(b){ b.classList.remove('active'); });
+                    this.classList.add('active');
+                    hideCtaSections();
+                    showCtaSection(section);
+                });
+            });
+        }
     });
     </script>
 

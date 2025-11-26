@@ -187,12 +187,64 @@ jQuery(document).ready(function($) {
         var enabled = $('input[name="ross_theme_footer_options[enable_footer_cta]"]').is(':checked');
         if (enabled) {
             $('[name="ross_theme_footer_options[cta_title]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_text]"]').closest('tr').show();
             $('[name="ross_theme_footer_options[cta_button_text]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_button_url]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_icon]"]').closest('tr').show();
             $('[name="ross_theme_footer_options[cta_bg_color]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_bg_image]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_bg_gradient_from]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_bg_gradient_to]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_text_color]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_button_bg_color]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_button_text_color]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_alignment]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_layout_direction]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_layout_wrap]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_layout_justify]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_layout_align]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_gap]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_padding_top]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_padding_right]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_padding_bottom]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_padding_left]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_icon_color]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_animation]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_anim_delay]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[enable_custom_cta]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[custom_cta_html]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[custom_cta_css]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[custom_cta_js]"]').closest('tr').show();
         } else {
             $('[name="ross_theme_footer_options[cta_title]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_text]"]').closest('tr').hide();
             $('[name="ross_theme_footer_options[cta_button_text]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_button_url]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_icon]"]').closest('tr').hide();
             $('[name="ross_theme_footer_options[cta_bg_color]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_bg_image]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_bg_gradient_from]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_bg_gradient_to]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_text_color]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_button_bg_color]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_button_text_color]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_alignment]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_layout_direction]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_layout_wrap]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_layout_justify]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_layout_align]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_gap]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_padding_top]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_padding_right]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_padding_bottom]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_padding_left]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_icon_color]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_animation]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[cta_anim_delay]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[enable_custom_cta]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[custom_cta_html]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[custom_cta_css]"]').closest('tr').hide();
+            $('[name="ross_theme_footer_options[custom_cta_js]"]').closest('tr').hide();
         }
     }
     
@@ -232,13 +284,6 @@ jQuery(document).ready(function($) {
     toggleCTAFields();
     toggleSocialFields();
     toggleCopyrightFields();
-
-    // Initialize bg & overlay fields and bind events
-    updateBgTypeFields();
-    updateOverlayFields();
-    $(document).on('change', 'select[name="ross_theme_footer_options[styling_bg_type]"]', updateBgTypeFields);
-    $(document).on('change', 'input[name="ross_theme_footer_options[styling_overlay_enabled]"]', updateOverlayFields);
-    $(document).on('change', 'select[name="ross_theme_footer_options[styling_overlay_type]"]', updateOverlayFields);
     
     // Bind events
     $(document).on('change', 'input[name="ross_theme_footer_options[enable_widgets]"]', toggleWidgetsFields);
@@ -246,7 +291,7 @@ jQuery(document).ready(function($) {
     $(document).on('change', 'input[name="ross_theme_footer_options[enable_social_icons]"]', toggleSocialFields);
     $(document).on('change', 'input[name="ross_theme_footer_options[enable_copyright]"]', toggleCopyrightFields);
 
-    // Background type and overlay controls
+    // Background type controls (for Styling tab)
     function updateBgTypeFields() {
         var type = $('select[name="ross_theme_footer_options[styling_bg_type]"]').val();
         // hide all
@@ -302,6 +347,34 @@ jQuery(document).ready(function($) {
         }
     }
 
+    // Init bg & overlay fields once
+    updateBgTypeFields();
+    updateOverlayFields();
+    // CTA-specific bg type controls
+    function updateCtaBgTypeFields() {
+        var type = $('select[name="ross_theme_footer_options[cta_bg_type]"]').val();
+        $('[name="ross_theme_footer_options[cta_bg_color]"]').closest('tr').hide();
+        $('[name="ross_theme_footer_options[cta_bg_image]"]').closest('tr').hide();
+        $('[name="ross_theme_footer_options[cta_bg_gradient_from]"]').closest('tr').hide();
+        $('[name="ross_theme_footer_options[cta_bg_gradient_to]"]').closest('tr').hide();
+        if (type === 'color') {
+            $('[name="ross_theme_footer_options[cta_bg_color]"]').closest('tr').show();
+        }
+        if (type === 'image') {
+            $('[name="ross_theme_footer_options[cta_bg_image]"]').closest('tr').show();
+        }
+        if (type === 'gradient') {
+            $('[name="ross_theme_footer_options[cta_bg_gradient_from]"]').closest('tr').show();
+            $('[name="ross_theme_footer_options[cta_bg_gradient_to]"]').closest('tr').show();
+        }
+    }
+    updateCtaBgTypeFields();
+    $(document).on('change', 'select[name="ross_theme_footer_options[cta_bg_type]"]', updateCtaBgTypeFields);
+
+    $(document).on('change', 'select[name="ross_theme_footer_options[styling_bg_type]"]', updateBgTypeFields);
+    $(document).on('change', 'input[name="ross_theme_footer_options[styling_overlay_enabled]"]', updateOverlayFields);
+    $(document).on('change', 'select[name="ross_theme_footer_options[styling_overlay_type]"]', updateOverlayFields);
+
     // Toggle gradient fields when checkbox toggled
     $(document).on('change', 'input[name="ross_theme_footer_options[styling_bg_gradient]"]', function(){
         var on = $(this).is(':checked');
@@ -329,56 +402,6 @@ jQuery(document).ready(function($) {
         }
         container.show();
     });
-
-    // Live admin preview: update colors/background on change so admin can see immediate effect
-    function updateAdminPreview() {
-        var preview = $('#ross-template-preview .ross-footer-preview');
-        if (!preview.length) return;
-
-        // Helper to set CSS variable on preview root
-        function setVar(name, value) {
-            try { preview.get(0).style.setProperty(name, value); } catch(e) {}
-        }
-
-        // Update basic colors from inputs
-        var bg = $('[name="ross_theme_footer_options[styling_bg_color]"]').val();
-        var text = $('[name="ross_theme_footer_options[styling_text_color]"]').val();
-        var accent = $('[name="ross_theme_footer_options[styling_link_color]"]').val();
-        var muted = $('input[name="ross_theme_footer_options[widgets_text_color]"]').val() || '#9aa6c1';
-        if (bg) setVar('--ross-bg', bg);
-        if (text) setVar('--ross-text', text);
-        if (accent) setVar('--ross-accent', accent);
-        if (muted) setVar('--ross-muted', muted);
-
-        // Background type handling: color/image/gradient
-        var type = $('[name="ross_theme_footer_options[styling_bg_type]"]').val();
-        if (type === 'image') {
-            var imgUrl = $('[name="ross_theme_footer_options[styling_bg_image]"]').val();
-            if (imgUrl) {
-                preview.css('background-image', 'url("' + imgUrl + '")');
-            } else {
-                preview.css('background-image', '');
-            }
-        } else if (type === 'gradient') {
-            var gFrom = $('[name="ross_theme_footer_options[styling_bg_gradient_from]"]').val();
-            var gTo = $('[name="ross_theme_footer_options[styling_bg_gradient_to]"]').val();
-            if (gFrom && gTo) {
-                preview.css('background-image', 'linear-gradient(to bottom,' + gFrom + ',' + gTo + ')');
-            }
-        } else {
-            // default to color clear bg-image so CSS var takes effect
-            preview.css('background-image', '');
-        }
-    }
-
-    // Bind live preview updates to specific relevant fields
-    $(document).on('change keyup', '[name="ross_theme_footer_options[styling_bg_color]"], [name="ross_theme_footer_options[styling_text_color]"], [name="ross_theme_footer_options[styling_link_color]"], [name="ross_theme_footer_options[widgets_text_color]"], [name="ross_theme_footer_options[styling_bg_gradient_from]"], [name="ross_theme_footer_options[styling_bg_gradient_to]"]', function(){ updateAdminPreview(); });
-    // Also re-run when bg type or image changes
-    $(document).on('change', '[name="ross_theme_footer_options[styling_bg_type]"]', updateAdminPreview);
-    $(document).on('change', '[name="ross_theme_footer_options[styling_bg_image]"]', updateAdminPreview);
-
-    // Run once on load so preview uses current state
-    updateAdminPreview();
 
     // Apply template (delegated handler + debug)
     $(document).on('click', '#ross-apply-template', function(e) {
