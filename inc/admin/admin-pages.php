@@ -301,10 +301,20 @@ function ross_theme_footer_page() {
                     <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_content">Content</button>
                     <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_layout">Layout</button>
                     <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_styling">Styling</button>
+                    <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_spacing">Spacing</button>
                     <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_animation">Animation</button>
                     <button type="button" class="ross-cta-tab-btn" data-section="ross_footer_cta_advanced">Advanced</button>
                 </div>
-                <?php do_settings_sections('ross-theme-footer-cta'); ?>
+                <div class="ross-cta-admin" style="display:flex; gap:1.5rem; align-items:flex-start;">
+                    <div class="ross-cta-admin-form" style="flex:1;">
+                        <?php do_settings_sections('ross-theme-footer-cta'); ?>
+                    </div>
+                    <div class="ross-cta-admin-preview" style="width:360px; max-width:40%;">
+                        <div id="ross-cta-preview" style="border:1px solid #ddd; padding:1rem; background:#fff; min-height:150px; display:flex; align-items:center; justify-content:center;">
+                            <em>CTA Preview (live)</em>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="ross-tab-content" id="tab-social">
@@ -312,7 +322,16 @@ function ross_theme_footer_page() {
             </div>
 
             <div class="ross-tab-content" id="tab-copyright">
-                <?php do_settings_sections('ross-theme-footer-copyright'); ?>
+                <div class="ross-copyright-admin" style="display:flex; gap:1.5rem; align-items:flex-start;">
+                    <div class="ross-copyright-admin-form" style="flex:1;">
+                        <?php do_settings_sections('ross-theme-footer-copyright'); ?>
+                    </div>
+                    <div class="ross-copyright-admin-preview" style="width:360px; max-width:40%;">
+                        <div id="ross-copyright-preview" style="border:1px solid #ddd; padding:1rem; background:#fff; min-height:80px; display:flex; align-items:center; justify-content:center;">
+                            <em>Copyright Preview (live)</em>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <?php submit_button('Save Footer Settings', 'primary', 'submit', true, array('class' => 'button-large ross-submit')); ?>
@@ -348,27 +367,60 @@ function ross_theme_footer_page() {
         });
         // CTA Subtab behavior
         var ctaTabBtns = document.querySelectorAll('.ross-cta-tab-btn');
-        if (ctaTabBtns && ctaTabBtns.length) {
-            var ctaSectionIds = ['ross_footer_cta_visibility','ross_footer_cta_content','ross_footer_cta_layout','ross_footer_cta_styling','ross_footer_cta_animation','ross_footer_cta_advanced'];
-            function hideCtaSections() {
+            if (ctaTabBtns && ctaTabBtns.length) {
+            var ctaSectionIds = ['ross_footer_cta_visibility','ross_footer_cta_content','ross_footer_cta_layout','ross_footer_cta_styling','ross_footer_cta_spacing','ross_footer_cta_animation','ross_footer_cta_advanced'];
+            // Wrap section header + table to make it easier to show/hide each section
+            function ensureCtaWrappers() {
                 ctaSectionIds.forEach(function(id) {
                     var h = document.getElementById(id);
                     if (!h) return;
-                    h.style.display = 'none';
                     var s = h.nextElementSibling;
                     while(s && !(s.tagName && s.tagName.toLowerCase() === 'table' && s.classList.contains('form-table'))) s = s.nextElementSibling;
-                    if (s) s.style.display = 'none';
+                    if (!s) return;
+                    // If already wrapped, skip
+                    if (h.parentElement && h.parentElement.classList && h.parentElement.classList.contains('ross-cta-section-wrapper')) return;
+                    var wrapper = document.createElement('div');
+                    wrapper.className = 'ross-cta-section-wrapper';
+                    wrapper.setAttribute('data-cta-section', id);
+                    // Insert wrapper before header and move header and table into wrapper
+                    h.parentElement.insertBefore(wrapper, h);
+                    wrapper.appendChild(h);
+                    wrapper.appendChild(s);
+                });
+            }
+
+            function hideCtaSections() {
+                ctaSectionIds.forEach(function(id) {
+                    var wrapper = document.querySelector('.ross-cta-section-wrapper[data-cta-section="' + id + '"]');
+                    if (!wrapper) {
+                        // fallback to previous approach if wrapper not present
+                        var h = document.getElementById(id);
+                        if (!h) return;
+                        h.style.display = 'none';
+                        var s = h.nextElementSibling;
+                        while(s && !(s.tagName && s.tagName.toLowerCase() === 'table' && s.classList.contains('form-table'))) s = s.nextElementSibling;
+                        if (s) s.style.display = 'none';
+                    } else {
+                        wrapper.style.display = 'none';
+                    }
                 });
             }
             function showCtaSection(id) {
-                var h = document.getElementById(id);
-                if (!h) return;
-                h.style.display = '';
-                var s = h.nextElementSibling;
-                while(s && !(s.tagName && s.tagName.toLowerCase() === 'table' && s.classList.contains('form-table'))) s = s.nextElementSibling;
-                if (s) s.style.display = '';
+                var wrapper = document.querySelector('.ross-cta-section-wrapper[data-cta-section="' + id + '"]');
+                if (wrapper) {
+                    wrapper.style.display = '';
+                } else {
+                    var h = document.getElementById(id);
+                    if (!h) return;
+                    h.style.display = '';
+                    var s = h.nextElementSibling;
+                    while(s && !(s.tagName && s.tagName.toLowerCase() === 'table' && s.classList.contains('form-table'))) s = s.nextElementSibling;
+                    if (s) s.style.display = '';
+                }
             }
 
+            // Ensure wrappers exist and hide sections by default
+            ensureCtaWrappers();
             hideCtaSections();
             showCtaSection('ross_footer_cta_visibility'); // default
 

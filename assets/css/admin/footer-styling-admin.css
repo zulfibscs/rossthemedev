@@ -17,6 +17,17 @@ table.form-table th { vertical-align: top; padding-top: 12px; }
 /* Make the preview box cleaner */
 #ross-template-preview { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 4px; }
 
+/* CTA preview box */
+#ross-cta-preview { min-height: 120px; border-radius: 6px; overflow: hidden; }
+#ross-cta-preview .footer-cta { width:100%; box-sizing:border-box; padding:12px; border-radius:6px; }
+#ross-cta-preview .footer-cta .btn { display:inline-block; padding:8px 12px; border-radius:4px; }
+#ross-cta-preview .cta-icon { font-size: 20px; vertical-align: middle; }
+
+/* Copyright preview box */
+#ross-copyright-preview { min-height: 48px; border-radius: 4px; }
+#ross-copyright-preview .copyright-live { width:100%; box-sizing: border-box; padding:8px; border-radius:4px; }
+#ross-copyright-preview .custom-footer-preview { width:100%; box-sizing: border-box; padding:8px; border-radius:4px; }
+
 /* Responsive adjustments */
 @media (max-width: 780px) {
     .ross-footer-styling-grid { grid-template-columns: 1fr; }

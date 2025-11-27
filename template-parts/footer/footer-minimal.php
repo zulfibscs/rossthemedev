@@ -49,5 +49,8 @@ $footer_options = get_option('ross_theme_footer_options');
 		</div>
 		<?php endif; ?>
 	</div>
-</footer>
+		<?php if (!empty($footer_options['custom_footer_js'])): ?>
+			<script><?php echo esc_html($footer_options['custom_footer_js']); ?></script>
+		<?php endif; ?>
+	</footer>
 
