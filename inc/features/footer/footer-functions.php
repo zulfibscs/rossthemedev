@@ -90,12 +90,22 @@ function ross_theme_should_show_social_icons() {
 
 function ross_theme_should_show_copyright() {
     $footer_options = get_option('ross_theme_footer_options');
+    // If a custom footer is enabled, avoid showing the default copyright block
+    if (!empty($footer_options['enable_custom_footer'])) {
+        return false;
+    }
     return isset($footer_options['enable_copyright']) ? (bool) $footer_options['enable_copyright'] : true;
 }
 
 function ross_theme_get_copyright_text() {
     $footer_options = get_option('ross_theme_footer_options');
-    return isset($footer_options['copyright_text']) ? $footer_options['copyright_text'] : '© ' . date('Y') . ' ' . get_bloginfo('name') . '. All rights reserved.';
+    $text = isset($footer_options['copyright_text']) ? $footer_options['copyright_text'] : '© {year} {site_name}. All rights reserved.';
+    // Replace placeholders
+    $placeholders = array('{year}', '{site_name}');
+    $replacements = array(date('Y'), get_bloginfo('name'));
+    $text = str_replace($placeholders, $replacements, $text);
+    // Allow HTML via kses_post but with placeholders replaced
+    return wp_kses_post($text);
 }
 
 
