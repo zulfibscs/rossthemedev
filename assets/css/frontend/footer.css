@@ -9,10 +9,18 @@
 .footer-placeholder { opacity: 0.35; font-size: 13px; }
 .site-footer { background: #f8f9fb; color: #222; }
 .footer-cta { padding: 1.25rem 0; background: #001946; color: #fff; }
+.footer-cta .footer-cta-inner{ display:flex; align-items:center; justify-content:center; gap:12px; }
+.footer-cta .cta-icon{ font-size:1.25rem; margin-right:8px; display:inline-flex; align-items:center; }
+.footer-cta.footer-cta--dir-column .footer-cta-inner{ flex-direction:column; }
+.footer-cta.footer-cta--wrap .footer-cta-inner{ flex-wrap:wrap; }
+.footer-cta .footer-cta-title{ margin:0; font-size:1.25rem; }
+.footer-cta .footer-cta-text { margin:0 0 0 0; }
 .footer-cta .btn { background: #E5C902; color: #001946; padding: 0.5rem 0.9rem; border-radius: 6px; text-decoration: none; }
 .site-footer-custom { padding: 1rem 0; background: transparent; }
 
 @media (max-width: 768px) {
 	.footer-columns--4, .footer-columns--3 { grid-template-columns: repeat(2, 1fr); }
 	.footer-columns--2 { grid-template-columns: 1fr; }
+	/* Stack CTA items on smaller screens */
+	.footer-cta .footer-cta-inner { flex-direction: column; gap: 8px; align-items: center; }
 }

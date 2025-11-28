@@ -5,8 +5,15 @@
 function ross_theme_dynamic_css() {
     $header_options = get_option('ross_theme_header_options', array());
     $general_options = get_option('ross_theme_general_options', array());
+    // defensive: ensure arrays to avoid errors if options were corrupted
+    if (!is_array($header_options)) { $header_options = array(); }
+    if (!is_array($general_options)) { $general_options = array(); }
     
     echo '<style type="text/css" id="ross-theme-dynamic-css">';
+    // Quick debug log to help identify runtime errors in head injection when WP debugging is enabled
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log('[ross_theme_dynamic_css] invoked at ' . date('c'));
+    }
     
     // Force apply header styles
     if (!empty($header_options['header_bg_color'])) {
@@ -108,8 +115,9 @@ function ross_theme_dynamic_css() {
         // Build background layers: gradient/top-overlay/image
         $bg_layers = array();
 
-        // If gradient enabled and both colors present, add gradient as top layer
-        if (!empty($footer_options['styling_bg_gradient']) && !empty($footer_options['styling_bg_gradient_from']) && !empty($footer_options['styling_bg_gradient_to'])) {
+        // Compose background based on the chosen background type
+        $bg_type = isset($footer_options['styling_bg_type']) ? $footer_options['styling_bg_type'] : 'color';
+        if ($bg_type === 'gradient' && !empty($footer_options['styling_bg_gradient_from']) && !empty($footer_options['styling_bg_gradient_to'])) {
             $from = $footer_options['styling_bg_gradient_from'];
             $to = $footer_options['styling_bg_gradient_to'];
             $bg_layers[] = 'linear-gradient(to bottom, ' . esc_attr($from) . ', ' . esc_attr($to) . ')';
@@ -132,10 +140,61 @@ function ross_theme_dynamic_css() {
             }
         }
 
-        // If an image provided, add it as the bottom layer
-        if (!empty($footer_options['styling_bg_image'])) {
+        // If image is provided and the selected background type is 'image', add it as the bottom layer
+        // (Avoid adding the image when the background type is 'color' because the image would hide the
+        //  solid color and make color changes invisible unless user toggles the type.)
+        if ($bg_type === 'image' && !empty($footer_options['styling_bg_image'])) {
             $img = esc_url($footer_options['styling_bg_image']);
             $bg_layers[] = 'url("' . $img . '")';
+        }
+
+        // Overlay layer handling (topmost layer)
+        $overlay_layers = array();
+        if (!empty($footer_options['styling_overlay_enabled']) && intval($footer_options['styling_overlay_enabled'])) {
+            $overlay_type = isset($footer_options['styling_overlay_type']) ? $footer_options['styling_overlay_type'] : 'color';
+            $overlay_opacity = isset($footer_options['styling_overlay_opacity']) ? floatval($footer_options['styling_overlay_opacity']) : 0.5;
+            if ($overlay_type === 'color' && !empty($footer_options['styling_overlay_color'])) {
+                $hex = ltrim($footer_options['styling_overlay_color'], '#');
+                if (strlen($hex) === 3) {
+                    $r = hexdec(str_repeat(substr($hex,0,1),2));
+                    $g = hexdec(str_repeat(substr($hex,1,1),2));
+                    $b = hexdec(str_repeat(substr($hex,2,1),2));
+                } else {
+                    $r = hexdec(substr($hex,0,2));
+                    $g = hexdec(substr($hex,2,2));
+                    $b = hexdec(substr($hex,4,2));
+                }
+                $rgba = 'rgba(' . $r . ',' . $g . ',' . $b . ',' . $overlay_opacity . ')';
+                $overlay_layers[] = 'linear-gradient(' . $rgba . ',' . $rgba . ')';
+            }
+            if ($overlay_type === 'gradient' && !empty($footer_options['styling_overlay_gradient_from']) && !empty($footer_options['styling_overlay_gradient_to'])) {
+                $from = $footer_options['styling_overlay_gradient_from'];
+                $to = $footer_options['styling_overlay_gradient_to'];
+                // apply overlay opacity by converting from/to to rgba with opacity
+                $from_hex = ltrim($from, '#'); $to_hex = ltrim($to, '#');
+                if (strlen($from_hex) === 3) { $fr = hexdec(str_repeat(substr($from_hex,0,1),2)); $fg = hexdec(str_repeat(substr($from_hex,1,1),2)); $fb = hexdec(str_repeat(substr($from_hex,2,1),2)); } else { $fr = hexdec(substr($from_hex,0,2)); $fg = hexdec(substr($from_hex,2,2)); $fb = hexdec(substr($from_hex,4,2)); }
+                if (strlen($to_hex) === 3) { $tr = hexdec(str_repeat(substr($to_hex,0,1),2)); $tg = hexdec(str_repeat(substr($to_hex,1,1),2)); $tb = hexdec(str_repeat(substr($to_hex,2,1),2)); } else { $tr = hexdec(substr($to_hex,0,2)); $tg = hexdec(substr($to_hex,2,2)); $tb = hexdec(substr($to_hex,4,2)); }
+                $from_rgba = 'rgba(' . $fr . ',' . $fg . ',' . $fb . ',' . $overlay_opacity . ')';
+                $to_rgba = 'rgba(' . $tr . ',' . $tg . ',' . $tb . ',' . $overlay_opacity . ')';
+                $overlay_layers[] = 'linear-gradient(to bottom, ' . $from_rgba . ', ' . $to_rgba . ')';
+            }
+            if ($overlay_type === 'image' && !empty($footer_options['styling_overlay_image'])) {
+                $oi = esc_url($footer_options['styling_overlay_image']);
+                // If opacity < 1, add an overlay tint above the image to simulate shading
+                if ($overlay_opacity < 1 && !empty($footer_options['styling_overlay_color'])) {
+                    // tint overlay for better control
+                    $hex = ltrim($footer_options['styling_overlay_color'], '#');
+                    if (strlen($hex) === 3) { $r = hexdec(str_repeat(substr($hex,0,1),2)); $g = hexdec(str_repeat(substr($hex,1,1),2)); $b = hexdec(str_repeat(substr($hex,2,1),2)); } else { $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2)); }
+                    $rgba = 'rgba(' . $r . ',' . $g . ',' . $b . ',' . (1-$overlay_opacity) . ')';
+                    $overlay_layers[] = 'linear-gradient(' . $rgba . ',' . $rgba . ')';
+                }
+                $overlay_layers[] = 'url("' . $oi . '")';
+            }
+        }
+
+        // Prepend overlay layers so they sit on top
+        if (!empty($overlay_layers)) {
+            $bg_layers = array_merge($overlay_layers, $bg_layers);
         }
 
         // Always output a fallback solid background color (so color works even when image/gradient present)
@@ -178,6 +237,11 @@ function ross_theme_dynamic_css() {
             echo '.footer-widgets .container, .footer-copyright .container { padding-left: ' . intval($padding_lr) . 'px !important; padding-right: ' . intval($padding_lr) . 'px !important; }';
         }
 
+        // Column and Row gaps
+        $col_gap = isset($footer_options['styling_col_gap']) ? intval($footer_options['styling_col_gap']) : 24;
+        $row_gap = isset($footer_options['styling_row_gap']) ? intval($footer_options['styling_row_gap']) : 18;
+        echo '.footer-columns { gap: ' . $row_gap . 'px ' . $col_gap . 'px !important; grid-row-gap: ' . $row_gap . 'px !important; grid-column-gap: ' . $col_gap . 'px !important; }';
+
         // border top
         if ($border_top && $border_thickness > 0 && !empty($border_color)) {
             echo '.footer-widgets { border-top: ' . intval($border_thickness) . 'px solid ' . esc_attr($border_color) . ' !important; }';
@@ -190,6 +254,164 @@ function ross_theme_dynamic_css() {
         if (!empty($widget_title_size)) {
             echo '.footer-widgets .widget-title, .footer-widgets h4 { font-size: ' . intval($widget_title_size) . 'px !important; }';
         }
+
+        // CTA Styling — generate if CTA will be visible (either enabled or always visible)
+        $should_show_cta = function_exists('ross_theme_should_show_footer_cta') ? ross_theme_should_show_footer_cta() : (isset($footer_options['enable_footer_cta']) && $footer_options['enable_footer_cta']);
+        if (defined('WP_DEBUG') && WP_DEBUG) { error_log('[ross_theme_dynamic_css] CTA should_show_cta=' . ($should_show_cta ? '1' : '0')); }
+        if ($should_show_cta) {
+        $cta_bg = isset($footer_options['cta_bg_color']) ? sanitize_hex_color($footer_options['cta_bg_color']) : '';
+        $cta_bg_type = isset($footer_options['cta_bg_type']) ? $footer_options['cta_bg_type'] : 'color';
+        $cta_bg_img = isset($footer_options['cta_bg_image']) ? esc_url($footer_options['cta_bg_image']) : '';
+        // overlay support for CTA
+        $cta_overlay_enabled = isset($footer_options['cta_overlay_enabled']) && intval($footer_options['cta_overlay_enabled']);
+        $cta_overlay_type = isset($footer_options['cta_overlay_type']) ? $footer_options['cta_overlay_type'] : 'color';
+        $cta_overlay_opacity = isset($footer_options['cta_overlay_opacity']) ? floatval($footer_options['cta_overlay_opacity']) : 0.5;
+        $cta_grad_from = isset($footer_options['cta_bg_gradient_from']) ? sanitize_hex_color($footer_options['cta_bg_gradient_from']) : '';
+        $cta_grad_to = isset($footer_options['cta_bg_gradient_to']) ? sanitize_hex_color($footer_options['cta_bg_gradient_to']) : '';
+        $cta_text_color = isset($footer_options['cta_text_color']) ? sanitize_hex_color($footer_options['cta_text_color']) : '';
+        $cta_button_bg = isset($footer_options['cta_button_bg_color']) ? sanitize_hex_color($footer_options['cta_button_bg_color']) : '';
+        $cta_button_text_color = isset($footer_options['cta_button_text_color']) ? sanitize_hex_color($footer_options['cta_button_text_color']) : '';
+        $cta_alignment = isset($footer_options['cta_alignment']) ? sanitize_text_field($footer_options['cta_alignment']) : 'center';
+        $cta_gap = isset($footer_options['cta_gap']) ? intval($footer_options['cta_gap']) : 12;
+        $cta_padding_top = isset($footer_options['cta_padding_top']) ? intval($footer_options['cta_padding_top']) : 24;
+        $cta_padding_right = isset($footer_options['cta_padding_right']) ? intval($footer_options['cta_padding_right']) : 0;
+        $cta_padding_bottom = isset($footer_options['cta_padding_bottom']) ? intval($footer_options['cta_padding_bottom']) : 24;
+        $cta_padding_left = isset($footer_options['cta_padding_left']) ? intval($footer_options['cta_padding_left']) : 0;
+
+        $cta_bg_layers = array();
+        if ($cta_bg_type === 'color' && !empty($cta_bg)) {
+            $cta_bg_layers[] = esc_attr($cta_bg);
+            echo '.footer-cta { background-color: ' . esc_attr($cta_bg) . ' !important; }';
+        }
+        if ($cta_bg_type === 'gradient' && !empty($cta_grad_from) && !empty($cta_grad_to)) {
+            echo '.footer-cta { background-image: linear-gradient(to right, ' . esc_attr($cta_grad_from) . ', ' . esc_attr($cta_grad_to) . ') !important; }';
+        }
+        if ($cta_bg_type === 'image' && !empty($cta_bg_img)) {
+            $cta_bg_layers[] = 'url("' . esc_url($cta_bg_img) . '")';
+        }
+        if (!empty($cta_text_color)) {
+            echo '.footer-cta, .footer-cta .footer-cta-text, .footer-cta h2, .footer-cta h3 { color: ' . esc_attr($cta_text_color) . ' !important; }';
+        }
+        if (!empty($cta_button_bg)) {
+            echo '.footer-cta .btn { background: ' . esc_attr($cta_button_bg) . ' !important; }';
+        }
+        if (!empty($cta_button_text_color)) {
+            echo '.footer-cta .btn { color: ' . esc_attr($cta_button_text_color) . ' !important; }';
+        }
+        echo '.footer-cta { padding: ' . intval($cta_padding_top) . 'px ' . intval($cta_padding_right) . 'px ' . intval($cta_padding_bottom) . 'px ' . intval($cta_padding_left) . 'px !important; }';
+        if (isset($footer_options['cta_margin_top']) || isset($footer_options['cta_margin_right']) || isset($footer_options['cta_margin_bottom']) || isset($footer_options['cta_margin_left'])) {
+            $m_top = isset($footer_options['cta_margin_top']) ? intval($footer_options['cta_margin_top']) : 0;
+            $m_right = isset($footer_options['cta_margin_right']) ? intval($footer_options['cta_margin_right']) : 0;
+            $m_bottom = isset($footer_options['cta_margin_bottom']) ? intval($footer_options['cta_margin_bottom']) : 0;
+            $m_left = isset($footer_options['cta_margin_left']) ? intval($footer_options['cta_margin_left']) : 0;
+            echo '.footer-cta { margin: ' . $m_top . 'px ' . $m_right . 'px ' . $m_bottom . 'px ' . $m_left . 'px !important; }';
+        }
+        // alignment
+        if (!empty($cta_alignment)) {
+            $justify = 'center';
+            if ($cta_alignment === 'left') $justify = 'flex-start';
+            if ($cta_alignment === 'right') $justify = 'flex-end';
+            echo '.footer-cta .footer-cta-inner { display: flex; align-items: center; justify-content: ' . $justify . ' !important; gap: ' . intval($cta_gap) . 'px !important; }';
+        }
+        // Icon color
+        if (!empty($footer_options['cta_icon_color'])) {
+            echo '.footer-cta .cta-icon { color: ' . esc_attr($footer_options['cta_icon_color']) . ' !important; }';
+        }
+
+        // Layout specifics (direction, wrap, justify, align)
+        $dir = isset($footer_options['cta_layout_direction']) ? $footer_options['cta_layout_direction'] : 'row';
+        $wrap = isset($footer_options['cta_layout_wrap']) && $footer_options['cta_layout_wrap'] ? 'wrap' : 'nowrap';
+        $justify = isset($footer_options['cta_layout_justify']) ? $footer_options['cta_layout_justify'] : 'center';
+        $align = isset($footer_options['cta_layout_align']) ? $footer_options['cta_layout_align'] : 'center';
+        echo '.footer-cta .footer-cta-inner { flex-direction: ' . esc_attr($dir) . ' !important; flex-wrap: ' . esc_attr($wrap) . ' !important; justify-content:' . esc_attr($justify) . ' !important; align-items:' . esc_attr($align) . ' !important; }';
+
+            // small animations
+            if (isset($footer_options['cta_animation']) && $footer_options['cta_animation'] !== 'none') {
+            $anim = $footer_options['cta_animation'];
+            $anim_delay = isset($footer_options['cta_anim_delay']) ? intval($footer_options['cta_anim_delay']) : 150;
+            $anim_duration = isset($footer_options['cta_anim_duration']) ? intval($footer_options['cta_anim_duration']) : 400;
+            $anim_delay_s = max(0.0, floatval($anim_delay / 1000.0));
+            if ($anim === 'fade') {
+                echo '.footer-cta--anim-fade { opacity: 0; transform: translateY(6px); transition: opacity ' . intval($anim_duration) . 'ms ease, transform ' . intval($anim_duration) . 'ms ease; }';
+                echo '.footer-cta--anim-fade.visible { opacity: 1; transform: none; }';
+                echo '.footer-cta--anim-fade { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            if ($anim === 'slide') {
+                echo '.footer-cta--anim-slide { opacity: 0; transform: translateY(12px); transition: opacity ' . intval($anim_duration) . 'ms ease, transform ' . intval($anim_duration) . 'ms ease; }';
+                echo '.footer-cta--anim-slide.visible { opacity: 1; transform: none; }';
+                echo '.footer-cta--anim-slide { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            if ($anim === 'pop') {
+                echo '.footer-cta--anim-pop { opacity: 0; transform: scale(.96); transition: opacity ' . intval($anim_duration) . 'ms ease, transform ' . intval($anim_duration) . 'ms ease; }';
+                echo '.footer-cta--anim-pop.visible { opacity: 1; transform: scale(1); }';
+                echo '.footer-cta--anim-pop { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            if ($anim === 'zoom') {
+                echo '.footer-cta--anim-zoom { opacity: 0; transform: scale(.95); transition: opacity ' . intval($anim_duration) . 'ms ease, transform ' . intval($anim_duration) . 'ms ease; }';
+                echo '.footer-cta--anim-zoom.visible { opacity: 1; transform: scale(1.02); }';
+                echo '.footer-cta--anim-zoom { transition-delay:' . $anim_delay_s . 's !important; }';
+            }
+            }
+        }
+        // CTA overlay CSS
+        if (!empty($cta_overlay_enabled) && $cta_overlay_enabled) {
+            // Build overlay layer for CTA background
+            $overlay_layer = '';
+            if ($cta_overlay_type === 'color' && !empty($footer_options['cta_overlay_color'])) {
+                $hex = ltrim($footer_options['cta_overlay_color'], '#');
+                if (strlen($hex) === 3) { $r = hexdec(str_repeat(substr($hex,0,1),2)); $g = hexdec(str_repeat(substr($hex,1,1),2)); $b = hexdec(str_repeat(substr($hex,2,1),2)); } else { $r = hexdec(substr($hex,0,2)); $g = hexdec(substr($hex,2,2)); $b = hexdec(substr($hex,4,2)); }
+                $rgba = 'rgba(' . $r . ',' . $g . ',' . $b . ',' . $cta_overlay_opacity . ')';
+                $overlay_layer = 'linear-gradient(' . $rgba . ',' . $rgba . ')';
+            }
+            if ($cta_overlay_type === 'gradient' && !empty($footer_options['cta_overlay_gradient_from']) && !empty($footer_options['cta_overlay_gradient_to'])) {
+                $f = $footer_options['cta_overlay_gradient_from']; $t = $footer_options['cta_overlay_gradient_to'];
+                $overlay_layer = 'linear-gradient(to bottom, ' . esc_attr($f) . ', ' . esc_attr($t) . ')';
+            }
+            if ($cta_overlay_type === 'image' && !empty($footer_options['cta_overlay_image'])) {
+                $overlay_layer = 'url("' . esc_url($footer_options['cta_overlay_image']) . '")';
+            }
+            if (!empty($overlay_layer)) {
+                echo '.footer-cta { background-image: ' . $overlay_layer . (isset($cta_bg_img) && $cta_bg_img ? ', url("' . esc_url($cta_bg_img) . '")' : '') . ' !important; background-size: cover !important; background-position:center center !important; }';
+            }
+        }
+        // Custom CTA CSS (advanced)
+        if (!empty($footer_options['enable_custom_cta']) && !empty($footer_options['custom_cta_css'])) {
+            echo $footer_options['custom_cta_css'];
+        }
+        // Output CTA base background layers if no overlay forcing a layer above
+        if (!empty($cta_bg_layers) && empty($cta_overlay_enabled)) {
+            $bg_css = implode(', ', $cta_bg_layers);
+            echo '.footer-cta { background-image: ' . $bg_css . ' !important; background-size: cover !important; background-position:center center !important; }';
+        }
+    }
+    // Copyright styling
+    $copyright_font_size = isset($footer_options['copyright_font_size']) ? intval($footer_options['copyright_font_size']) : 14;
+    $copyright_font_weight = isset($footer_options['copyright_font_weight']) ? $footer_options['copyright_font_weight'] : 'normal';
+    $copyright_letter_spacing = isset($footer_options['copyright_letter_spacing']) ? floatval($footer_options['copyright_letter_spacing']) : 0;
+    $copyright_bg = isset($footer_options['copyright_bg_color']) ? sanitize_hex_color($footer_options['copyright_bg_color']) : '';
+    $copyright_text_color = isset($footer_options['copyright_text_color']) ? sanitize_hex_color($footer_options['copyright_text_color']) : '';
+    $copyright_alignment = isset($footer_options['copyright_alignment']) ? esc_attr($footer_options['copyright_alignment']) : 'center';
+    if (!empty($copyright_bg)) {
+        echo '.footer-copyright { background-color: ' . esc_attr($copyright_bg) . ' !important; }';
+    }
+    if (!empty($copyright_text_color)) {
+        echo '.footer-copyright, .footer-copyright .copyright-text { color: ' . esc_attr($copyright_text_color) . ' !important; }';
+    }
+    if (!empty($copyright_font_size)) {
+        echo '.footer-copyright .copyright-text { font-size: ' . intval($copyright_font_size) . 'px !important; }';
+    }
+    if (!empty($copyright_font_weight)) {
+        $map = array('light' => '300', 'normal' => '400', 'bold' => '700');
+        $fw = isset($map[$copyright_font_weight]) ? $map[$copyright_font_weight] : '400';
+        echo '.footer-copyright .copyright-text { font-weight: ' . esc_attr($fw) . ' !important; }';
+    }
+    if (!empty($copyright_letter_spacing) || $copyright_letter_spacing === 0) {
+        echo '.footer-copyright .copyright-text { letter-spacing: ' . floatval($copyright_letter_spacing) . 'px !important; }';
+    }
+
+    // Custom footer CSS if provided
+    if (!empty($footer_options['custom_footer_css'])) {
+        echo $footer_options['custom_footer_css'];
     }
     
     // Apply general colors
