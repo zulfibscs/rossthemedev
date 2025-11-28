@@ -1,0 +1,14 @@
+{
+  "name": "ross-theme-admin-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "test:e2e:debug": "PWDEBUG=1 npx playwright test",
+    "playwright:install": "npx playwright install --with-deps"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.46.0"
+  }
+}
