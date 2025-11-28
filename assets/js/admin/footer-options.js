@@ -755,9 +755,63 @@ jQuery(document).ready(function($) {
         if (serverPreview.length) {
             container.html(serverPreview.html());
         } else {
-            container.html('<em>No preview available</em>');
+            // Attempt to fetch preview via AJAX if it's not embedded
+            if (typeof rossFooterAdmin !== 'undefined' && rossFooterAdmin.ajax_url) {
+                var payload = { action: 'ross_get_footer_template_preview', template: selected, nonce: rossFooterAdmin.nonce };
+                console.log('Requesting server-side preview for', selected);
+                $.post(rossFooterAdmin.ajax_url, payload, function(resp) {
+                    if (resp && resp.success && resp.data && resp.data.html) {
+                        container.html(resp.data.html);
+                    } else {
+                        console.warn('Server preview fetch failed', resp);
+                        container.html('<em>No preview available</em>');
+                    }
+                }).fail(function(xhr) {
+                    console.error('Preview AJAX call failed', xhr);
+                    container.html('<em>Error fetching preview</em>');
+                });
+            } else {
+                container.html('<em>No preview available</em>');
+            }
         }
         container.show();
+    });
+
+    // Auto-preview when switching template selection for faster UX and enable Apply button
+    function footerTemplateSelectionChanged() {
+        $('#ross-preview-template').trigger('click');
+        var selected = $('input[name="ross_theme_footer_options[footer_template]"]:checked').val();
+        if (selected) {
+            $('#ross-apply-template').prop('disabled', false);
+        } else {
+            $('#ross-apply-template').prop('disabled', true);
+        }
+    }
+    $(document).on('change', 'input[name="ross_theme_footer_options[footer_template]"]', footerTemplateSelectionChanged);
+
+    // Initialize Apply button enabled state
+    $(document).ready(function(){
+        var selected = $('input[name="ross_theme_footer_options[footer_template]"]:checked').val();
+        $('#ross-apply-template').prop('disabled', !selected);
+    });
+
+    // Helper: reload backups list via AJAX and replace markup
+    function reloadFooterBackups() {
+        if (typeof rossFooterAdmin === 'undefined' || !rossFooterAdmin.ajax_url) return;
+        var payload = { action: 'ross_list_footer_backups', nonce: rossFooterAdmin.nonce };
+        $.post(rossFooterAdmin.ajax_url, payload, function(resp){
+            if (resp && resp.success && resp.data && resp.data.html) {
+                $('#ross-footer-backups').html('<h4>Recent Footer Backups</h4>' + resp.data.html);
+            }
+        });
+    }
+
+    // On load, show preview for the currently-selected template if any
+    $(document).ready(function() {
+        var selected = $('input[name="ross_theme_footer_options[footer_template]"]:checked').val();
+        if (selected) {
+            $('#ross-preview-template').trigger('click');
+        }
     });
 
     // Apply template (delegated handler + debug)
@@ -776,38 +830,45 @@ jQuery(document).ready(function($) {
         };
 
         $.post((typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.ajax_url : ajaxurl), data, function(resp) {
+            console.log('Apply template response', resp);
             if (!resp) return alert('Unexpected response from server');
             if (resp.success) {
                 var msg = $('<div class="notice notice-success inline" id="ross-footer-apply-notice" style="margin-top:10px;"></div>');
                 var widgetsLink = (typeof rossFooterAdmin !== 'undefined' && rossFooterAdmin.widgets_url) ? rossFooterAdmin.widgets_url : (window.location.origin + '/wp-admin/widgets.php');
-                msg.append('<p>Template applied. <a href="' + widgetsLink + '">Edit widgets</a> — <button class="button-link" id="ross-undo-apply">Undo</button></p>');
+                msg.append('<p>Template applied. <a href="' + widgetsLink + '">Edit widgets</a> — <button class="button-link" id="ross-undo-apply" data-backup-id="' + (resp.data && resp.data.backup_id ? resp.data.backup_id : '') + '">Undo</button></p>');
                 $('#ross-template-preview').after(msg);
 
-                // Bind undo click (delegated)
+                // Bind undo click (delegated) - ensure single handler registration
+                $(document).off('click', '#ross-undo-apply');
                 $(document).on('click', '#ross-undo-apply', function(ev) {
                     ev.preventDefault();
                     if (!confirm('Restore the previous footer (undo)?')) return;
 
-                    var restoreData = { action: 'ross_restore_footer_backup', nonce: (typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.nonce : '') };
+                    var backupId = $(this).data('backup-id');
+                    var restoreData = { action: 'ross_restore_footer_backup', backup_id: backupId, nonce: (typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.nonce : '') };
                     $.post((typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.ajax_url : ajaxurl), restoreData, function(res) {
+                        console.log('Undo restore response', res);
                         if (res && res.success) {
-                            alert('Footer restored from backup. Refreshing page.');
-                            location.reload();
+                            alert('Footer restored from backup.');
+                            // Update backups list if server included HTML
+                            if (res.data && res.data.backups_html) {
+                                $('#ross-footer-backups').html('<h4>Recent Footer Backups</h4>' + res.data.backups_html);
+                            } else {
+                                try { reloadFooterBackups(); } catch(e) { console.warn('Unable to reload backups after undo', e); }
+                            }
                         } else {
                             alert('Failed to restore: ' + (res && res.data ? res.data : 'unknown'));
                         }
                     });
                 });
 
-                // auto-dismiss and redirect to frontend after a short delay so user can see success message
+                // auto-dismiss the notification after a short delay
                 setTimeout(function(){ $('#ross-footer-apply-notice').fadeOut(300, function(){ $(this).remove(); }); }, 30000);
-
-                // Redirect to the site front-end after 1.5s so user can immediately view changes
-                try {
-                    var siteUrl = (typeof rossFooterAdmin !== 'undefined' && rossFooterAdmin.site_url) ? rossFooterAdmin.site_url : window.location.origin + '/';
-                    setTimeout(function(){ window.location.href = siteUrl; }, 1500);
-                } catch(e) {
-                    // ignore redirection errors
+                // Update backups HTML if provided by server to reduce extra calls
+                if (resp.data && resp.data.backups_html) {
+                    $('#ross-footer-backups').html('<h4>Recent Footer Backups</h4>' + resp.data.backups_html);
+                } else {
+                    try { reloadFooterBackups(); } catch(e) { console.warn('Unable to reload footer backups', e); }
                 }
             } else {
                 alert('Error applying template: ' + (resp.data || 'unknown'));
@@ -824,9 +885,14 @@ jQuery(document).ready(function($) {
 
         var data = { action: 'ross_restore_footer_backup', backup_id: id, nonce: (typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.nonce : '') };
         $.post((typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.ajax_url : ajaxurl), data, function(resp){
+            console.log('Restore action response', resp);
             if (resp && resp.success) {
-                alert('Backup restored. Reloading.');
-                location.reload();
+                alert('Backup restored successfully.');
+                if (resp.data && resp.data.backups_html) {
+                    $('#ross-footer-backups').html('<h4>Recent Footer Backups</h4>' + resp.data.backups_html);
+                } else {
+                    try { reloadFooterBackups(); } catch(e) { console.warn('Unable to reload backups after restore', e); }
+                }
             } else {
                 alert('Restore failed: ' + (resp && resp.data ? resp.data : 'unknown'));
             }
@@ -842,8 +908,14 @@ jQuery(document).ready(function($) {
 
         var data = { action: 'ross_delete_footer_backup', backup_id: id, nonce: (typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.nonce : '') };
         $.post((typeof rossFooterAdmin !== 'undefined' ? rossFooterAdmin.ajax_url : ajaxurl), data, function(resp){
+            console.log('Delete action response', resp);
             if (resp && resp.success) {
                 $row.fadeOut(200, function(){ $(this).remove(); });
+                if (resp.data && resp.data.backups_html) {
+                    $('#ross-footer-backups').html('<h4>Recent Footer Backups</h4>' + resp.data.backups_html);
+                } else {
+                    try { reloadFooterBackups(); } catch(e) { console.warn('Unable to reload backups after delete', e); }
+                }
             } else {
                 alert('Delete failed: ' + (resp && resp.data ? resp.data : 'unknown'));
             }

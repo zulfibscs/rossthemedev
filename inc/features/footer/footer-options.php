@@ -12,12 +12,14 @@ class RossFooterOptions {
         $this->options = get_option('ross_theme_footer_options');
         // Run a quick migration for legacy template keys before registering settings
         add_action('admin_init', array($this, 'migrate_legacy_template_keys'), 5);
+        add_action('admin_init', array($this, 'ensure_default_template_options'), 6);
         add_action('admin_init', array($this, 'register_footer_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_footer_scripts'));
         add_action('wp_ajax_ross_apply_footer_template', array($this, 'ajax_apply_footer_template'));
         add_action('wp_ajax_ross_restore_footer_backup', array($this, 'ajax_restore_footer_backup'));
         add_action('wp_ajax_ross_delete_footer_backup', array($this, 'ajax_delete_footer_backup'));
         add_action('wp_ajax_ross_list_footer_backups', array($this, 'ajax_list_footer_backups'));
+        add_action('wp_ajax_ross_get_footer_template_preview', array($this, 'ajax_get_footer_template_preview'));
     }
 
     /**
@@ -55,6 +57,37 @@ class RossFooterOptions {
             // Refresh local copy for current request
             $this->options = $opts;
         }
+    }
+
+    /** Ensure that default footer templates exist in stored options (for customization or persistence) */
+    public function ensure_default_template_options() {
+        if (!is_admin()) return;
+        $templates = get_option('ross_theme_footer_templates', array());
+        if (!is_array($templates) || empty($templates)) {
+            $default = array(
+                'template1' => array('title' => 'Business Professional', 'cols' => array('About Us|We provide finance and accounting services to small businesses.', 'Services|Auditing, Tax, Advisory', 'Resources|Blog, Guides, FAQs', 'Contact|1 Example Street, City — info@example.com'), 'bg' => '#f8f9fb'),
+                'template2' => array('title' => 'E-commerce', 'cols' => array('Shop|All Products, New Arrivals, Sale', 'Customer Service|Shipping, Returns, FAQ', 'Company|About, Careers, Press', 'Subscribe|Join our newsletter'), 'bg' => '#fff'),
+                'template3' => array('title' => 'Creative Agency', 'cols' => array('Who We Are|Design-led agency crafting beautiful experiences.', 'Work|Case Studies, Clients', 'Services|Branding, UX/UI', 'Contact|hello@agency.example'), 'bg' => '#111'),
+                'template4' => array('title' => 'Minimal Modern', 'cols' => array('Company|About, Contact', 'Explore|Features, Pricing', 'Resources|Docs, API', 'Follow|Social links'), 'bg' => '#fafafa'),
+            );
+            update_option('ross_theme_footer_templates', $default);
+            $templates = $default;
+        }
+        return $templates;
+    }
+
+    /** Return templates array - stored override falls back to default hardcoded list */
+    private function get_templates() {
+        $stored = get_option('ross_theme_footer_templates', array());
+        if (is_array($stored) && !empty($stored)) return $stored;
+
+        // default templates (same as earlier sample list)
+        return array(
+            'template1' => array('title' => 'Business Professional', 'cols' => array('About Us|We provide finance and accounting services to small businesses.', 'Services|Auditing, Tax, Advisory', 'Resources|Blog, Guides, FAQs', 'Contact|1 Example Street, City — info@example.com'), 'bg' => '#f8f9fb'),
+            'template2' => array('title' => 'E-commerce', 'cols' => array('Shop|All Products, New Arrivals, Sale', 'Customer Service|Shipping, Returns, FAQ', 'Company|About, Careers, Press', 'Subscribe|Join our newsletter'), 'bg' => '#fff'),
+            'template3' => array('title' => 'Creative Agency', 'cols' => array('Who We Are|Design-led agency crafting beautiful experiences.', 'Work|Case Studies, Clients', 'Services|Branding, UX/UI', 'Contact|hello@agency.example'), 'bg' => '#111'),
+            'template4' => array('title' => 'Minimal Modern', 'cols' => array('Company|About, Contact', 'Explore|Features, Pricing', 'Resources|Docs, API', 'Follow|Social links'), 'bg' => '#fafafa'),
+        );
     }
     
     public function enqueue_footer_scripts($hook) {
@@ -1170,48 +1203,7 @@ class RossFooterOptions {
      * Return HTML for a preview of a template (safe for admin display)
      */
     private function get_template_preview_html($tpl) {
-        $samples = array(
-            'template1' => array(
-                'title' => 'Business Professional',
-                'cols' => array(
-                    '<h4>About Us</h4><p>We provide finance and accounting services to small businesses.</p>',
-                    '<h4>Services</h4><ul><li>Auditing</li><li>Tax</li><li>Advisory</li></ul>',
-                    '<h4>Resources</h4><ul><li>Blog</li><li>Guides</li><li>FAQs</li></ul>',
-                    '<h4>Contact</h4><p>1 Example Street<br/>City, Country<br/><a href="mailto:info@example.com">info@example.com</a></p>',
-                ),
-                'bg' => '#f8f9fb'
-            ),
-            'template2' => array(
-                'title' => 'E-commerce',
-                'cols' => array(
-                    '<h4>Shop</h4><ul><li>All Products</li><li>New Arrivals</li><li>Sale</li></ul>',
-                    '<h4>Customer Service</h4><ul><li>Shipping</li><li>Returns</li><li>FAQ</li></ul>',
-                    '<h4>Company</h4><ul><li>About</li><li>Careers</li><li>Press</li></ul>',
-                    '<h4>Stay Updated</h4><p>Subscribe to our newsletter</p>',
-                ),
-                'bg' => '#fff'
-            ),
-            'template3' => array(
-                'title' => 'Creative Agency',
-                'cols' => array(
-                    '<h4>Who We Are</h4><p>Design-led agency crafting beautiful experiences.</p>',
-                    '<h4>Work</h4><ul><li>Case Studies</li><li>Clients</li></ul>',
-                    '<h4>Services</h4><ul><li>Branding</li><li>UX/UI</li></ul>',
-                    '<h4>Contact</h4><p>hello@agency.example</p>',
-                ),
-                'bg' => '#111'
-            ),
-            'template4' => array(
-                'title' => 'Minimal Modern',
-                'cols' => array(
-                    '<h4>Company</h4><ul><li>About</li><li>Contact</li></ul>',
-                    '<h4>Explore</h4><ul><li>Features</li><li>Pricing</li></ul>',
-                    '<h4>Resources</h4><ul><li>Docs</li><li>API</li></ul>',
-                    '<h4>Follow</h4><p>Social links</p>',
-                ),
-                'bg' => '#fafafa'
-            ),
-        );
+        $samples = $this->get_templates();
 
         if (!isset($samples[$tpl])) return '';
         $s = $samples[$tpl];
@@ -1250,40 +1242,7 @@ class RossFooterOptions {
         $tpl = isset($_POST['template']) ? sanitize_text_field($_POST['template']) : 'template1';
 
         // Sample column contents (same structure as previews)
-        $samples = array(
-            'template1' => array(
-                'cols' => array(
-                    'About Us|We provide finance and accounting services to small businesses.',
-                    'Services|Auditing, Tax, Advisory',
-                    'Resources|Blog, Guides, FAQs',
-                    'Contact|1 Example Street, City — info@example.com'
-                ),
-            ),
-            'template2' => array(
-                'cols' => array(
-                    'Shop|All Products, New Arrivals, Sale',
-                    'Customer Service|Shipping, Returns, FAQ',
-                    'Company|About, Careers, Press',
-                    'Subscribe|Join our newsletter'
-                ),
-            ),
-            'template3' => array(
-                'cols' => array(
-                    'Who We Are|Design-led agency crafting beautiful experiences.',
-                    'Work|Case Studies, Clients',
-                    'Services|Branding, UX/UI',
-                    'Contact|hello@agency.example'
-                ),
-            ),
-            'template4' => array(
-                'cols' => array(
-                    'Company|About, Contact',
-                    'Explore|Features, Pricing',
-                    'Resources|Docs, API',
-                    'Follow|Social links'
-                ),
-            ),
-        );
+        $samples = $this->get_templates();
 
         if (!isset($samples[$tpl])) {
             wp_send_json_error('Invalid template');
@@ -1321,7 +1280,8 @@ class RossFooterOptions {
 
         // Pick a widget base - prefer custom_html, fallback to text
         $widget_base = null;
-        if (get_option('widget_custom_html') !== false || true) {
+        // Prefer custom_html if it exists; otherwise fallback to text widget
+        if (get_option('widget_custom_html') !== false) {
             $widget_base = 'custom_html';
             $widget_option_name = 'widget_custom_html';
         } else {
@@ -1338,7 +1298,7 @@ class RossFooterOptions {
         // Find next numeric index
         $next_index = 1;
         foreach ($widgets as $k => $v) {
-            if (is_int($k) && $k >= $next_index) $next_index = $k + 1;
+            if (is_numeric($k) && intval($k) >= $next_index) $next_index = intval($k) + 1;
         }
 
         $created_ids = array();
@@ -1380,7 +1340,8 @@ class RossFooterOptions {
 
         update_option('sidebars_widgets', $sidebars);
 
-        wp_send_json_success(array('message' => 'Template applied', 'created' => $created_ids, 'backup_created' => true));
+        $new_backups_html = $this->render_backups_list_html();
+        wp_send_json_success(array('message' => 'Template applied', 'created' => $created_ids, 'backup_created' => true, 'backup_id' => $backup['id'], 'backups_html' => $new_backups_html));
     }
 
     /**
@@ -1435,7 +1396,8 @@ class RossFooterOptions {
         array_splice($backups, $found_index, 1);
         update_option('ross_footer_template_backups', $backups);
 
-        wp_send_json_success(array('message' => 'Footer restored from backup', 'restored_id' => isset($found['id']) ? $found['id'] : ''));
+        $new_backups_html = $this->render_backups_list_html();
+        wp_send_json_success(array('message' => 'Footer restored from backup', 'restored_id' => isset($found['id']) ? $found['id'] : '', 'backups_html' => $new_backups_html));
     }
 
     /**
@@ -1465,7 +1427,8 @@ class RossFooterOptions {
         array_splice($backups, $found_index, 1);
         $this->save_backups($backups);
 
-        wp_send_json_success(array('message' => 'Backup deleted', 'deleted_id' => $id));
+        $new_backups_html = $this->render_backups_list_html();
+        wp_send_json_success(array('message' => 'Backup deleted', 'deleted_id' => $id, 'backups_html' => $new_backups_html));
     }
 
     /**
@@ -1479,7 +1442,27 @@ class RossFooterOptions {
         check_ajax_referer('ross_apply_footer_template', 'nonce');
 
         $backups = $this->get_backups();
-        wp_send_json_success(array('backups' => $backups));
+        $html = $this->render_backups_list_html();
+        wp_send_json_success(array('backups' => $backups, 'html' => $html));
+    }
+
+    /**
+     * AJAX: return preview HTML for a given template key.
+     */
+    public function ajax_get_footer_template_preview() {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized', 403);
+        }
+
+        check_ajax_referer('ross_apply_footer_template', 'nonce');
+
+        $tpl = isset($_POST['template']) ? sanitize_text_field($_POST['template']) : '';
+        if (empty($tpl)) wp_send_json_error('Missing template');
+
+        $html = $this->get_template_preview_html($tpl);
+        if (empty($html)) wp_send_json_error('No preview available');
+
+        wp_send_json_success(array('template' => $tpl, 'html' => $html));
     }
     
     public function footer_columns_callback() {
